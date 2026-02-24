@@ -27,7 +27,7 @@ if __name__ == "__main__":
     except UnicodeEncodeError:
         print("  SentriMail - AI Complaint Management")
     print("="*50)
-    print("  → http://localhost:8000")
+    print(f" -> Running on port {os.environ.get('PORT', 8000)}")
     print("  → Admin:  admin / admin123")
     print("  → User:   alice / alice123  |  bob / bob123")
     print("="*50 + "\n")
