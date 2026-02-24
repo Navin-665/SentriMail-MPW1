@@ -250,49 +250,56 @@ def _generate_ai_response(priority: str, username: str, complaint_id: str) -> st
 
 # ─── Main Public Function ──────────────────────────────────────
 
-def analyze_complaint(text: str, category: str = "other", username: str = "Customer", complaint_id: str = "N/A") -> Dict[str, Any]:
-    """
-    Full AI analysis pipeline.
-    Returns sentiment, emotion, priority, root cause, and suggested response.
-    """
-    _load_models()
+# def analyze_complaint(text: str, category: str = "other", username: str = "Customer", complaint_id: str = "N/A") -> Dict[str, Any]:
+#     """
+#     Full AI analysis pipeline.
+#     Returns sentiment, emotion, priority, root cause, and suggested response.
+#     """
+#     _load_models()
 
-    # 1. Sentiment
-    if _use_transformers and _sentiment_pipeline:
-        try:
-            raw = _sentiment_pipeline(text[:512])[0]
-            sentiment = {"label": raw["label"], "score": round(raw["score"], 3)}
-        except Exception:
-            sentiment = _rule_based_sentiment(text)
-    else:
-        sentiment = _rule_based_sentiment(text)
+#     # 1. Sentiment
+#     if _use_transformers and _sentiment_pipeline:
+#         try:
+#             raw = _sentiment_pipeline(text[:512])[0]
+#             sentiment = {"label": raw["label"], "score": round(raw["score"], 3)}
+#         except Exception:
+#             sentiment = _rule_based_sentiment(text)
+#     else:
+#         sentiment = _rule_based_sentiment(text)
 
-    # 2. Emotion
-    if _use_transformers and _emotion_pipeline:
-        try:
-            raw = _emotion_pipeline(text[:512])[0]
-            emotion = {"label": raw["label"], "score": round(raw["score"], 3)}
-        except Exception:
-            emotion = _rule_based_emotion(text)
-    else:
-        emotion = _rule_based_emotion(text)
+#     # 2. Emotion
+#     if _use_transformers and _emotion_pipeline:
+#         try:
+#             raw = _emotion_pipeline(text[:512])[0]
+#             emotion = {"label": raw["label"], "score": round(raw["score"], 3)}
+#         except Exception:
+#             emotion = _rule_based_emotion(text)
+#     else:
+#         emotion = _rule_based_emotion(text)
 
-    # 3. Priority
-    priority_data = _compute_priority(sentiment, emotion, text)
+#     # 3. Priority
+#     priority_data = _compute_priority(sentiment, emotion, text)
 
-    # 4. Root cause
-    root_cause = _generate_root_cause(category, emotion["label"], text)
+#     # 4. Root cause
+#     root_cause = _generate_root_cause(category, emotion["label"], text)
 
-    # 5. AI suggested response
-    ai_response = _generate_ai_response(priority_data["priority"], username, complaint_id)
+#     # 5. AI suggested response
+#     ai_response = _generate_ai_response(priority_data["priority"], username, complaint_id)
 
+#     return {
+#         "sentiment_label": sentiment["label"],
+#         "sentiment_score": sentiment["score"],
+#         "emotion_label": emotion["label"].capitalize(),
+#         "emotion_score": emotion["score"],
+#         **priority_data,
+#         "root_cause_summary": root_cause,
+#         "ai_suggested_response": ai_response,
+#         "model_used": "transformer" if _use_transformers else "rule-based"
+#     }
+def analyze_complaint(text, **kwargs):
     return {
-        "sentiment_label": sentiment["label"],
-        "sentiment_score": sentiment["score"],
-        "emotion_label": emotion["label"].capitalize(),
-        "emotion_score": emotion["score"],
-        **priority_data,
-        "root_cause_summary": root_cause,
-        "ai_suggested_response": ai_response,
-        "model_used": "transformer" if _use_transformers else "rule-based"
+        "sentiment_label": "NEUTRAL",
+        "priority": "LOW",
+        "priority_color": "#22c55e",
+        "ai_suggested_response": "We are reviewing your complaint."
     }
