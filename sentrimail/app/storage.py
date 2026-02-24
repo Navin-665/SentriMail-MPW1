@@ -1,483 +1,146 @@
-from fastapi import FastAPI, Request, Form, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from fastapi.middleware.cors import CORSMiddleware
+import json
 import os
-import sys
+import uuid
+from datetime import datetime
+from typing import List, Dict, Any
 
-# Add project root to path
+
+# --------------------------------------------------
+# Paths
+# --------------------------------------------------
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(BASE_DIR)
+DATA_DIR = os.path.join(BASE_DIR, "data")
 
-from app.auth import (
-    authenticate_user,
-    create_session,
-    get_current_user,
-    logout_user,
-    get_all_users,
-    register_user,
-)
+os.makedirs(DATA_DIR, exist_ok=True)
 
-from app.storage import (
-    get_all_complaints,
-    get_user_complaints,
-    save_complaint,
-    get_complaint_by_id,
-    update_complaint_response,
-    update_complaint_status,
-)
-
-from app.ai_engine import analyze_complaint
+COMPLAINTS_FILE = os.path.join(DATA_DIR, "complaints.json")
+USERS_FILE = os.path.join(DATA_DIR, "users.json")
 
 
 # --------------------------------------------------
-# App Setup
+# Init Files
 # --------------------------------------------------
 
-app = FastAPI(title="SentriMail", version="1.0.0")
+def _ensure_files():
+    if not os.path.exists(COMPLAINTS_FILE):
+        with open(COMPLAINTS_FILE, "w") as f:
+            json.dump([], f)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-# --------------------------------------------------
-# Static + Templates
-# --------------------------------------------------
-
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
-
-os.makedirs(STATIC_DIR, exist_ok=True)
-
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-templates = Jinja2Templates(directory=TEMPLATE_DIR)
+    if not os.path.exists(USERS_FILE):
+        with open(USERS_FILE, "w") as f:
+            json.dump([], f)
 
 
-# --------------------------------------------------
-# Health Check (For Railway)
-# --------------------------------------------------
-
-@app.get("/health")
-def health():
-    return {"status": "ok"}
-
-
-# --------------------------------------------------
-# Root
-# --------------------------------------------------
-
-@app.get("/", response_class=HTMLResponse)
-async def root(request: Request):
-    try:
-        user = get_current_user(request)
-    except Exception:
-        user = None
-
-    if user:
-        role = user.get("role")
-
-        if role == "admin":
-            return RedirectResponse("/admin/dashboard", status_code=302)
-
-        if role == "user":
-            return RedirectResponse("/user/dashboard", status_code=302)
-
-    return RedirectResponse("/login", status_code=302)
-
-
-# --------------------------------------------------
-# Auth Routes
-# --------------------------------------------------
-
-@app.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request, error: str = None):
+def _load_json(path: str):
+    _ensure_files()
 
     try:
-        user = get_current_user(request)
+        with open(path, "r") as f:
+            return json.load(f)
     except Exception:
-        user = None
-
-    if user:
-        return RedirectResponse("/", status_code=302)
-
-    return templates.TemplateResponse(
-        "login.html",
-        {"request": request, "error": error},
-    )
+        return []
 
 
-@app.post("/login")
-async def login(
-    request: Request,
-    username: str = Form(...),
-    password: str = Form(...),
-):
-
-    user = authenticate_user(username, password)
-
-    if not user:
-        return templates.TemplateResponse(
-            "login.html",
-            {
-                "request": request,
-                "error": "Invalid credentials",
-            },
-        )
-
-    response = RedirectResponse("/", status_code=302)
-    create_session(response, user)
-
-    return response
-
-
-@app.get("/register", response_class=HTMLResponse)
-async def register_page(
-    request: Request,
-    error: str = None,
-    success: str = None,
-):
-
-    return templates.TemplateResponse(
-        "register.html",
-        {
-            "request": request,
-            "error": error,
-            "success": success,
-        },
-    )
-
-
-@app.post("/register")
-async def register(
-    request: Request,
-    username: str = Form(...),
-    password: str = Form(...),
-    email: str = Form(...),
-):
-
-    result = register_user(username, password, email)
-
-    if not result["success"]:
-        return templates.TemplateResponse(
-            "register.html",
-            {
-                "request": request,
-                "error": result["message"],
-            },
-        )
-
-    return templates.TemplateResponse(
-        "register.html",
-        {
-            "request": request,
-            "success": "Account created! You can login now.",
-        },
-    )
-
-
-@app.get("/logout")
-async def logout(request: Request):
-
-    response = RedirectResponse("/login", status_code=302)
-    logout_user(response)
-
-    return response
+def _save_json(path: str, data):
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2, default=str)
 
 
 # --------------------------------------------------
-# User Routes
+# Complaints
 # --------------------------------------------------
 
-@app.get("/user/dashboard", response_class=HTMLResponse)
-async def user_dashboard(request: Request):
+def get_all_complaints() -> List[Dict]:
+    return _load_json(COMPLAINTS_FILE)
 
-    try:
-        user = get_current_user(request)
-    except Exception:
-        user = None
 
-    if not user or user.get("role") != "user":
-        return RedirectResponse("/login", status_code=302)
+def get_user_complaints(username: str) -> List[Dict]:
+    complaints = _load_json(COMPLAINTS_FILE)
 
-    complaints = get_user_complaints(user["username"])
-
-    return templates.TemplateResponse(
-        "user_dashboard.html",
-        {
-            "request": request,
-            "user": user,
-            "complaints": complaints,
-            "total": len(complaints),
-            "pending": len([c for c in complaints if c["status"] == "pending"]),
-            "resolved": len([c for c in complaints if c["status"] == "resolved"]),
-        },
+    return sorted(
+        [c for c in complaints if c.get("username") == username],
+        key=lambda x: x.get("created_at", ""),
+        reverse=True,
     )
 
 
-@app.get("/user/submit", response_class=HTMLResponse)
-async def submit_page(request: Request):
+def get_complaint_by_id(complaint_id: str) -> Dict | None:
+    complaints = _load_json(COMPLAINTS_FILE)
 
-    try:
-        user = get_current_user(request)
-    except Exception:
-        user = None
-
-    if not user or user.get("role") != "user":
-        return RedirectResponse("/login", status_code=302)
-
-    return templates.TemplateResponse(
-        "submit_complaint.html",
-        {
-            "request": request,
-            "user": user,
-        },
+    return next(
+        (c for c in complaints if c.get("id") == complaint_id),
+        None,
     )
 
 
-@app.post("/user/submit")
-async def submit_complaint(
-    request: Request,
-    title: str = Form(...),
-    description: str = Form(...),
-):
+def save_complaint(data: Dict[str, Any]) -> Dict:
 
-    try:
-        user = get_current_user(request)
-    except Exception:
-        user = None
+    complaints = _load_json(COMPLAINTS_FILE)
 
-    if not user or user.get("role") != "user":
-        return RedirectResponse("/login", status_code=302)
+    complaint = {
+        "id": str(uuid.uuid4())[:8].upper(),
+        "title": data.get("title", ""),
+        "category": data.get("category", "other"),
+        "description": data.get("description", ""),
+        "username": data.get("username", ""),
+        "email": data.get("email", ""),
+        "status": data.get("status", "pending"),
+        "created_at": datetime.now().isoformat(),
+        "updated_at": datetime.now().isoformat(),
 
-    analysis = analyze_complaint(
-        description,
-        category="other",
-        username=user["username"],
-    )
-
-    is_low = analysis.get("priority") == "LOW"
-
-    complaint_data = {
-        "title": title,
-        "category": "other",
-        "description": description,
-        "username": user["username"],
-        "email": user.get("email", ""),
-        **analysis,
+        # AI fields
+        "sentiment_label": data.get("sentiment_label", "NEUTRAL"),
+        "sentiment_score": data.get("sentiment_score", 0.5),
+        "emotion_label": data.get("emotion_label", "Neutral"),
+        "emotion_score": data.get("emotion_score", 0.5),
+        "priority": data.get("priority", "LOW"),
+        "priority_color": data.get("priority_color", "#22c55e"),
+        "priority_score": data.get("priority_score", 0),
+        "priority_description": data.get("priority_description", ""),
+        "root_cause_summary": data.get("root_cause_summary", ""),
+        "ai_suggested_response": data.get("ai_suggested_response", ""),
+        "model_used": data.get("model_used", "lightweight"),
+        "admin_response": data.get("admin_response", ""),
     }
 
-    if is_low:
-        complaint_data["status"] = "resolved"
-        complaint_data["admin_response"] = analysis.get(
-            "ai_suggested_response", ""
-        )
+    complaints.append(complaint)
 
-    complaint = save_complaint(complaint_data)
+    _save_json(COMPLAINTS_FILE, complaints)
 
-    return templates.TemplateResponse(
-        "submit_complaint.html",
-        {
-            "request": request,
-            "user": user,
-            "success": True,
-            "analysis": analysis,
-            "title": title,
-            "complaint": complaint,
-            "auto_resolved": is_low,
-        },
-    )
+    return complaint
 
 
-# --------------------------------------------------
-# Admin Routes
-# --------------------------------------------------
+def update_complaint_status(complaint_id: str, status: str) -> bool:
 
-@app.get("/admin/dashboard", response_class=HTMLResponse)
-async def admin_dashboard(request: Request):
+    complaints = _load_json(COMPLAINTS_FILE)
 
-    try:
-        user = get_current_user(request)
-    except Exception:
-        user = None
+    for c in complaints:
+        if c["id"] == complaint_id:
+            c["status"] = status
+            c["updated_at"] = datetime.now().isoformat()
 
-    if not user or user.get("role") != "admin":
-        return RedirectResponse("/login", status_code=302)
+            _save_json(COMPLAINTS_FILE, complaints)
+            return True
 
-    complaints = get_all_complaints()
-
-    priority_order = {
-        "CRITICAL": 0,
-        "HIGH": 1,
-        "MEDIUM": 2,
-        "LOW": 3,
-    }
-
-    complaints_sorted = sorted(
-        complaints,
-        key=lambda x: priority_order.get(
-            x.get("priority", "LOW"), 3
-        ),
-    )
-
-    stats = {
-        "total": len(complaints),
-        "critical": len([c for c in complaints if c.get("priority") == "CRITICAL"]),
-        "high": len([c for c in complaints if c.get("priority") == "HIGH"]),
-        "medium": len([c for c in complaints if c.get("priority") == "MEDIUM"]),
-        "low": len([c for c in complaints if c.get("priority") == "LOW"]),
-        "pending": len([c for c in complaints if c.get("status") == "pending"]),
-    }
-
-    return templates.TemplateResponse(
-        "admin_dashboard.html",
-        {
-            "request": request,
-            "user": user,
-            "complaints": complaints_sorted,
-            "stats": stats,
-        },
-    )
+    return False
 
 
-@app.get("/admin/complaint/{complaint_id}", response_class=HTMLResponse)
-async def complaint_detail(
-    request: Request,
+def update_complaint_response(
     complaint_id: str,
-):
+    response: str,
+    status: str = "resolved",
+) -> bool:
 
-    try:
-        user = get_current_user(request)
-    except Exception:
-        user = None
+    complaints = _load_json(COMPLAINTS_FILE)
 
-    if not user or user.get("role") != "admin":
-        return RedirectResponse("/login", status_code=302)
+    for c in complaints:
+        if c["id"] == complaint_id:
+            c["admin_response"] = response
+            c["status"] = status
+            c["updated_at"] = datetime.now().isoformat()
 
-    complaint = get_complaint_by_id(complaint_id)
+            _save_json(COMPLAINTS_FILE, complaints)
+            return True
 
-    if not complaint:
-        raise HTTPException(status_code=404)
-
-    return templates.TemplateResponse(
-        "complaint_detail.html",
-        {
-            "request": request,
-            "user": user,
-            "complaint": complaint,
-        },
-    )
-
-
-@app.post("/admin/complaint/{complaint_id}/status")
-async def update_status(
-    request: Request,
-    complaint_id: str,
-    status: str = Form(...),
-):
-
-    try:
-        user = get_current_user(request)
-    except Exception:
-        user = None
-
-    if not user or user.get("role") != "admin":
-        return RedirectResponse("/login", status_code=302)
-
-    update_complaint_status(complaint_id, status)
-
-    return RedirectResponse(
-        f"/admin/complaint/{complaint_id}",
-        status_code=302,
-    )
-
-
-@app.post("/admin/complaint/{complaint_id}/response")
-async def update_response(
-    request: Request,
-    complaint_id: str,
-    response: str = Form(...),
-    status: str = Form("resolved"),
-):
-
-    try:
-        user = get_current_user(request)
-    except Exception:
-        user = None
-
-    if not user or user.get("role") != "admin":
-        return RedirectResponse("/login", status_code=302)
-
-    update_complaint_response(
-        complaint_id,
-        response,
-        status,
-    )
-
-    return RedirectResponse(
-        f"/admin/complaint/{complaint_id}",
-        status_code=302,
-    )
-
-
-@app.get("/admin/users", response_class=HTMLResponse)
-async def admin_users(request: Request):
-
-    try:
-        user = get_current_user(request)
-    except Exception:
-        user = None
-
-    if not user or user.get("role") != "admin":
-        return RedirectResponse("/login", status_code=302)
-
-    users = get_all_users()
-
-    return templates.TemplateResponse(
-        "admin_users.html",
-        {
-            "request": request,
-            "user": user,
-            "users": users,
-        },
-    )
-
-
-# --------------------------------------------------
-# API
-# --------------------------------------------------
-
-@app.get("/api/complaints")
-async def api_complaints(request: Request):
-
-    try:
-        user = get_current_user(request)
-    except Exception:
-        user = None
-
-    if not user or user.get("role") != "admin":
-        raise HTTPException(status_code=403)
-
-    return get_all_complaints()
-
-
-@app.post("/api/analyze")
-async def api_analyze(request: Request):
-
-    try:
-        user = get_current_user(request)
-    except Exception:
-        user = None
-
-    if not user:
-        raise HTTPException(status_code=401)
-
-    body = await request.json()
-    text = body.get("text", "")
-
-    return analyze_complaint(text)
+    return False
