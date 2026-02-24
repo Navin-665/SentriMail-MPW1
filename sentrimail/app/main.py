@@ -41,13 +41,17 @@ templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
-    user = get_current_user(request)
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
     if user:
-        if user["role"] == "admin":
+        if user.get("role") == "admin":
             return RedirectResponse("/admin/dashboard", status_code=302)
         return RedirectResponse("/user/dashboard", status_code=302)
-    return RedirectResponse("/login", status_code=302)
 
+    return RedirectResponse("/login", status_code=302)
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request, error: str = None):

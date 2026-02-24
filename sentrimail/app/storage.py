@@ -1,110 +1,483 @@
-"""
-SentriMail Storage
--------------------
-JSON-based persistent storage for complaints.
-"""
-
-import json
+from fastapi import FastAPI, Request, Form, HTTPException
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 import os
-import uuid
-from datetime import datetime
-from typing import List, Dict, Any
+import sys
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
-COMPLAINTS_FILE = os.path.join(DATA_DIR, "complaints.json")
+# Add project root to path
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
 
+from app.auth import (
+    authenticate_user,
+    create_session,
+    get_current_user,
+    logout_user,
+    get_all_users,
+    register_user,
+)
 
-def _ensure_data_dir():
-    os.makedirs(DATA_DIR, exist_ok=True)
+from app.storage import (
+    get_all_complaints,
+    get_user_complaints,
+    save_complaint,
+    get_complaint_by_id,
+    update_complaint_response,
+    update_complaint_status,
+)
 
-
-def _load_complaints() -> List[Dict]:
-    _ensure_data_dir()
-    if not os.path.exists(COMPLAINTS_FILE):
-        return []
-    with open(COMPLAINTS_FILE, "r") as f:
-        try:
-            return json.load(f)
-        except json.JSONDecodeError:
-            return []
-
-
-def _save_complaints(complaints: List[Dict]):
-    _ensure_data_dir()
-    with open(COMPLAINTS_FILE, "w") as f:
-        json.dump(complaints, f, indent=2, default=str)
+from app.ai_engine import analyze_complaint
 
 
-def save_complaint(complaint_data: Dict[str, Any]) -> Dict:
-    complaints = _load_complaints()
+# --------------------------------------------------
+# App Setup
+# --------------------------------------------------
 
-    complaint_id = str(uuid.uuid4())[:8].upper()
+app = FastAPI(title="SentriMail", version="1.0.0")
 
-    status = complaint_data.get("status", "pending")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    complaint = {
-        "id": complaint_id,
-        "title": complaint_data.get("title", "Untitled"),
-        "category": complaint_data.get("category", "other"),
-        "description": complaint_data.get("description", ""),
-        "username": complaint_data.get("username", "anonymous"),
-        "email": complaint_data.get("email", ""),
-        "status": status,
-        "created_at": datetime.now().isoformat(),
-        "updated_at": datetime.now().isoformat(),
-        # AI analysis fields
-        "sentiment_label": complaint_data.get("sentiment_label", "NEUTRAL"),
-        "sentiment_score": complaint_data.get("sentiment_score", 0.5),
-        "emotion_label": complaint_data.get("emotion_label", "Neutral"),
-        "emotion_score": complaint_data.get("emotion_score", 0.5),
-        "priority": complaint_data.get("priority", "LOW"),
-        "priority_color": complaint_data.get("priority_color", "#22c55e"),
-        "priority_score": complaint_data.get("priority_score", 0),
-        "priority_description": complaint_data.get("priority_description", ""),
-        "root_cause_summary": complaint_data.get("root_cause_summary", ""),
-        "ai_suggested_response": complaint_data.get("ai_suggested_response", ""),
-        "model_used": complaint_data.get("model_used", "rule-based"),
-        "admin_response": complaint_data.get("admin_response", ""),
+
+# --------------------------------------------------
+# Static + Templates
+# --------------------------------------------------
+
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+
+os.makedirs(STATIC_DIR, exist_ok=True)
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+templates = Jinja2Templates(directory=TEMPLATE_DIR)
+
+
+# --------------------------------------------------
+# Health Check (For Railway)
+# --------------------------------------------------
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+# --------------------------------------------------
+# Root
+# --------------------------------------------------
+
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
+    if user:
+        role = user.get("role")
+
+        if role == "admin":
+            return RedirectResponse("/admin/dashboard", status_code=302)
+
+        if role == "user":
+            return RedirectResponse("/user/dashboard", status_code=302)
+
+    return RedirectResponse("/login", status_code=302)
+
+
+# --------------------------------------------------
+# Auth Routes
+# --------------------------------------------------
+
+@app.get("/login", response_class=HTMLResponse)
+async def login_page(request: Request, error: str = None):
+
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
+    if user:
+        return RedirectResponse("/", status_code=302)
+
+    return templates.TemplateResponse(
+        "login.html",
+        {"request": request, "error": error},
+    )
+
+
+@app.post("/login")
+async def login(
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...),
+):
+
+    user = authenticate_user(username, password)
+
+    if not user:
+        return templates.TemplateResponse(
+            "login.html",
+            {
+                "request": request,
+                "error": "Invalid credentials",
+            },
+        )
+
+    response = RedirectResponse("/", status_code=302)
+    create_session(response, user)
+
+    return response
+
+
+@app.get("/register", response_class=HTMLResponse)
+async def register_page(
+    request: Request,
+    error: str = None,
+    success: str = None,
+):
+
+    return templates.TemplateResponse(
+        "register.html",
+        {
+            "request": request,
+            "error": error,
+            "success": success,
+        },
+    )
+
+
+@app.post("/register")
+async def register(
+    request: Request,
+    username: str = Form(...),
+    password: str = Form(...),
+    email: str = Form(...),
+):
+
+    result = register_user(username, password, email)
+
+    if not result["success"]:
+        return templates.TemplateResponse(
+            "register.html",
+            {
+                "request": request,
+                "error": result["message"],
+            },
+        )
+
+    return templates.TemplateResponse(
+        "register.html",
+        {
+            "request": request,
+            "success": "Account created! You can login now.",
+        },
+    )
+
+
+@app.get("/logout")
+async def logout(request: Request):
+
+    response = RedirectResponse("/login", status_code=302)
+    logout_user(response)
+
+    return response
+
+
+# --------------------------------------------------
+# User Routes
+# --------------------------------------------------
+
+@app.get("/user/dashboard", response_class=HTMLResponse)
+async def user_dashboard(request: Request):
+
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
+    if not user or user.get("role") != "user":
+        return RedirectResponse("/login", status_code=302)
+
+    complaints = get_user_complaints(user["username"])
+
+    return templates.TemplateResponse(
+        "user_dashboard.html",
+        {
+            "request": request,
+            "user": user,
+            "complaints": complaints,
+            "total": len(complaints),
+            "pending": len([c for c in complaints if c["status"] == "pending"]),
+            "resolved": len([c for c in complaints if c["status"] == "resolved"]),
+        },
+    )
+
+
+@app.get("/user/submit", response_class=HTMLResponse)
+async def submit_page(request: Request):
+
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
+    if not user or user.get("role") != "user":
+        return RedirectResponse("/login", status_code=302)
+
+    return templates.TemplateResponse(
+        "submit_complaint.html",
+        {
+            "request": request,
+            "user": user,
+        },
+    )
+
+
+@app.post("/user/submit")
+async def submit_complaint(
+    request: Request,
+    title: str = Form(...),
+    description: str = Form(...),
+):
+
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
+    if not user or user.get("role") != "user":
+        return RedirectResponse("/login", status_code=302)
+
+    analysis = analyze_complaint(
+        description,
+        category="other",
+        username=user["username"],
+    )
+
+    is_low = analysis.get("priority") == "LOW"
+
+    complaint_data = {
+        "title": title,
+        "category": "other",
+        "description": description,
+        "username": user["username"],
+        "email": user.get("email", ""),
+        **analysis,
     }
 
-    complaints.append(complaint)
-    _save_complaints(complaints)
-    return complaint
+    if is_low:
+        complaint_data["status"] = "resolved"
+        complaint_data["admin_response"] = analysis.get(
+            "ai_suggested_response", ""
+        )
+
+    complaint = save_complaint(complaint_data)
+
+    return templates.TemplateResponse(
+        "submit_complaint.html",
+        {
+            "request": request,
+            "user": user,
+            "success": True,
+            "analysis": analysis,
+            "title": title,
+            "complaint": complaint,
+            "auto_resolved": is_low,
+        },
+    )
 
 
-def get_all_complaints() -> List[Dict]:
-    return _load_complaints()
+# --------------------------------------------------
+# Admin Routes
+# --------------------------------------------------
+
+@app.get("/admin/dashboard", response_class=HTMLResponse)
+async def admin_dashboard(request: Request):
+
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
+    if not user or user.get("role") != "admin":
+        return RedirectResponse("/login", status_code=302)
+
+    complaints = get_all_complaints()
+
+    priority_order = {
+        "CRITICAL": 0,
+        "HIGH": 1,
+        "MEDIUM": 2,
+        "LOW": 3,
+    }
+
+    complaints_sorted = sorted(
+        complaints,
+        key=lambda x: priority_order.get(
+            x.get("priority", "LOW"), 3
+        ),
+    )
+
+    stats = {
+        "total": len(complaints),
+        "critical": len([c for c in complaints if c.get("priority") == "CRITICAL"]),
+        "high": len([c for c in complaints if c.get("priority") == "HIGH"]),
+        "medium": len([c for c in complaints if c.get("priority") == "MEDIUM"]),
+        "low": len([c for c in complaints if c.get("priority") == "LOW"]),
+        "pending": len([c for c in complaints if c.get("status") == "pending"]),
+    }
+
+    return templates.TemplateResponse(
+        "admin_dashboard.html",
+        {
+            "request": request,
+            "user": user,
+            "complaints": complaints_sorted,
+            "stats": stats,
+        },
+    )
 
 
-def get_user_complaints(username: str) -> List[Dict]:
-    complaints = _load_complaints()
-    user_complaints = [c for c in complaints if c.get("username") == username]
-    return sorted(user_complaints, key=lambda x: x.get("created_at", ""), reverse=True)
+@app.get("/admin/complaint/{complaint_id}", response_class=HTMLResponse)
+async def complaint_detail(
+    request: Request,
+    complaint_id: str,
+):
+
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
+    if not user or user.get("role") != "admin":
+        return RedirectResponse("/login", status_code=302)
+
+    complaint = get_complaint_by_id(complaint_id)
+
+    if not complaint:
+        raise HTTPException(status_code=404)
+
+    return templates.TemplateResponse(
+        "complaint_detail.html",
+        {
+            "request": request,
+            "user": user,
+            "complaint": complaint,
+        },
+    )
 
 
-def update_complaint_status(complaint_id: str, status: str) -> bool:
-    complaints = _load_complaints()
-    for complaint in complaints:
-        if complaint["id"] == complaint_id:
-            complaint["status"] = status
-            complaint["updated_at"] = datetime.now().isoformat()
-            _save_complaints(complaints)
-            return True
-    return False
+@app.post("/admin/complaint/{complaint_id}/status")
+async def update_status(
+    request: Request,
+    complaint_id: str,
+    status: str = Form(...),
+):
+
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
+    if not user or user.get("role") != "admin":
+        return RedirectResponse("/login", status_code=302)
+
+    update_complaint_status(complaint_id, status)
+
+    return RedirectResponse(
+        f"/admin/complaint/{complaint_id}",
+        status_code=302,
+    )
 
 
-def get_complaint_by_id(complaint_id: str) -> Dict | None:
-    complaints = _load_complaints()
-    return next((c for c in complaints if c["id"] == complaint_id), None)
+@app.post("/admin/complaint/{complaint_id}/response")
+async def update_response(
+    request: Request,
+    complaint_id: str,
+    response: str = Form(...),
+    status: str = Form("resolved"),
+):
+
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
+    if not user or user.get("role") != "admin":
+        return RedirectResponse("/login", status_code=302)
+
+    update_complaint_response(
+        complaint_id,
+        response,
+        status,
+    )
+
+    return RedirectResponse(
+        f"/admin/complaint/{complaint_id}",
+        status_code=302,
+    )
 
 
-def update_complaint_response(complaint_id: str, response: str, status: str = "resolved") -> bool:
-    complaints = _load_complaints()
-    for complaint in complaints:
-        if complaint["id"] == complaint_id:
-            complaint["admin_response"] = response
-            complaint["status"] = status
-            complaint["updated_at"] = datetime.now().isoformat()
-            _save_complaints(complaints)
-            return True
-    return False
+@app.get("/admin/users", response_class=HTMLResponse)
+async def admin_users(request: Request):
+
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
+    if not user or user.get("role") != "admin":
+        return RedirectResponse("/login", status_code=302)
+
+    users = get_all_users()
+
+    return templates.TemplateResponse(
+        "admin_users.html",
+        {
+            "request": request,
+            "user": user,
+            "users": users,
+        },
+    )
+
+
+# --------------------------------------------------
+# API
+# --------------------------------------------------
+
+@app.get("/api/complaints")
+async def api_complaints(request: Request):
+
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
+    if not user or user.get("role") != "admin":
+        raise HTTPException(status_code=403)
+
+    return get_all_complaints()
+
+
+@app.post("/api/analyze")
+async def api_analyze(request: Request):
+
+    try:
+        user = get_current_user(request)
+    except Exception:
+        user = None
+
+    if not user:
+        raise HTTPException(status_code=401)
+
+    body = await request.json()
+    text = body.get("text", "")
+
+    return analyze_complaint(text)
