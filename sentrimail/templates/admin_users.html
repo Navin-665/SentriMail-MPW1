@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Users — SentriMail{% endblock %}
+
+{% block nav_links %}
+<a href="/admin/dashboard" class="nav-link">← Inbox</a>
+<a href="/admin/users" class="nav-link">Users</a>
+{% endblock %}
+
+{% block content %}
+<div class="fade-up">
+  <div class="section-header">
+    <div>
+      <div class="section-title">User Management</div>
+      <div class="section-sub">All registered accounts in the system</div>
+    </div>
+    <span class="mono" style="font-size:12px;color:var(--muted)">{{ users|length }} accounts</span>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;font-family:'Syne',sans-serif">
+                  {{ u.username[0].upper() }}
+                </div>
+                <span style="color:var(--text);font-weight:500">{{ u.username }}</span>
+              </div>
+            </td>
+            <td><span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">{{ u.email }}</span></td>
+            <td>
+              <span class="nav-badge {% if u.role == 'admin' %}badge-admin{% else %}badge-user{% endif %}">
+                {{ u.role }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

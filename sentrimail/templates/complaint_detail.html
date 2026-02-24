@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% block title %}Complaint #{{ complaint.id }} — SentriMail{% endblock %}
+
+{% block nav_links %}
+<a href="/admin/dashboard" class="nav-link">← Back to Inbox</a>
+<a href="/admin/users" class="nav-link">Users</a>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+.detail-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
+.detail-section { margin-bottom: 24px; }
+.detail-section-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.complaint-body {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  font-size: 14px;
+  color: var(--subtle);
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+.ai-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  position: sticky;
+  top: 80px;
+}
+.meter {
+  margin: 10px 0;
+}
+.meter-header { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+.meter-bar { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.meter-fill { height: 100%; border-radius: 3px; }
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.info-row:last-child { border-bottom: none; }
+.info-label { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
+.text-box {
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 12px;
+  color: var(--subtle);
+  line-height: 1.7;
+  margin-top: 8px;
+}
+.root-box { background: rgba(59,130,246,0.05); border: 1px solid rgba(59,130,246,0.15); }
+.response-box { background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.15); white-space: pre-wrap; font-family: 'DM Mono', monospace; font-size: 11px; }
+.status-form { display: flex; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 768px) { .detail-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="fade-up">
+  <!-- Header -->
+  <div style="margin-bottom:24px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+      <span class="mono" style="color:var(--blue);font-size:16px">#{{ complaint.id }}</span>
+      <span class="priority-badge priority-{{ complaint.priority }}">
+        {% if complaint.priority == 'CRITICAL' %}🔴{% elif complaint.priority == 'HIGH' %}🟠{% elif complaint.priority == 'MEDIUM' %}🟡{% else %}🟢{% endif %}
+        {{ complaint.priority }}
+      </span>
+      <span class="status-badge status-{{ complaint.status }}">
+        {{ complaint.status | replace('_', ' ') | title }}
+      </span>
+    </div>
+    <h1 style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px">
+      {{ complaint.title }}
+    </h1>
+    <div style="font-size:12px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap">
+      <span>👤 {{ complaint.username }}</span>
+      {% if complaint.email %}<span>✉️ {{ complaint.email }}</span>{% endif %}
+      <span>📂 {{ complaint.category | title }}</span>
+      <span>📅 {{ complaint.created_at[:10] }}</span>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <!-- Left: Complaint content + status -->
+    <div>
+      <div class="detail-section">
+        <div class="detail-section-title">Complaint Description</div>
+        <div class="complaint-body">{{ complaint.description }}</div>
+      </div>
+
+      <!-- Status update -->
+      <div class="detail-section card">
+        <div class="detail-section-title">Update Status</div>
+        <form method="POST" action="/admin/complaint/{{ complaint.id }}/status" class="status-form">
+          <button name="status" value="pending" type="submit"
+            class="btn btn-sm {% if complaint.status == 'pending' %}btn-primary{% else %}btn-outline{% endif %}">
+            ⏳ Pending
+          </button>
+          <button name="status" value="in_progress" type="submit"
+            class="btn btn-sm {% if complaint.status == 'in_progress' %}btn-primary{% else %}btn-outline{% endif %}">
+            🔄 In Progress
+          </button>
+          <button name="status" value="resolved" type="submit"
+            class="btn btn-sm {% if complaint.status == 'resolved' %}btn-success{% else %}btn-outline{% endif %}">
+            ✅ Resolved
+          </button>
+          <button name="status" value="rejected" type="submit"
+            class="btn btn-sm {% if complaint.status == 'rejected' %}btn-danger{% else %}btn-outline{% endif %}">
+            ✗ Rejected
+          </button>
+        </form>
+      </div>
+
+      <!-- Root Cause -->
+      <div class="detail-section">
+        <div class="detail-section-title">🔍 Root Cause Analysis</div>
+        <div class="text-box root-box">{{ complaint.root_cause_summary }}</div>
+      </div>
+
+      <!-- Admin Final Response -->
+      <div class="detail-section">
+        <div class="detail-section-title">✏️ Final Response To User</div>
+        <form method="POST" action="/admin/complaint/{{ complaint.id }}/response">
+          <textarea name="response" class="form-control" rows="6" placeholder="Compose the message that will be sent to the user. You can start from the AI suggestion shown on the right.">{% if complaint.admin_response %}{{ complaint.admin_response }}{% else %}{{ complaint.ai_suggested_response }}{% endif %}</textarea>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+            <button type="submit" class="btn btn-primary btn-sm">Send &amp; Mark Resolved</button>
+          </div>
+        </form>
+        {% if complaint.admin_response %}
+        <div style="margin-top:14px">
+          <div class="detail-section-title">✅ Current Response Sent</div>
+          <div class="text-box response-box">{{ complaint.admin_response }}</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right: AI analysis sidebar -->
+    <div class="ai-section fade-up-1">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px">🤖 AI Analysis</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:16px">
+        Model: <span class="mono" style="color:{% if complaint.model_used == 'transformer' %}var(--green){% else %}var(--amber){% endif %}">{{ complaint.model_used }}</span>
+      </div>
+
+      <!-- Sentiment -->
+      <div class="info-row">
+        <span class="info-label">Sentiment</span>
+        <span style="font-size:12px;font-weight:500;
+          color:{% if complaint.sentiment_label == 'NEGATIVE' %}#f43f5e{% elif complaint.sentiment_label == 'POSITIVE' %}#10b981{% else %}#94a3b8{% endif %}">
+          {{ complaint.sentiment_label }}
+        </span>
+      </div>
+      <div class="meter">
+        <div class="meter-header">
+          <span>Confidence</span>
+          <span>{{ "%.0f"|format(complaint.sentiment_score * 100) }}%</span>
+        </div>
+        <div class="meter-bar">
+          <div class="meter-fill" style="width:{{ "%.0f"|format(complaint.sentiment_score * 100) }}%;
+            background:{% if complaint.sentiment_label == 'NEGATIVE' %}#f43f5e{% elif complaint.sentiment_label == 'POSITIVE' %}#10b981{% else %}#64748b{% endif %}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Emotion -->
+      <div class="info-row">
+        <span class="info-label">Emotion</span>
+        <span style="font-size:12px;color:var(--subtle)">
+          {% if complaint.emotion_label|lower == 'anger' %}😡
+          {% elif complaint.emotion_label|lower == 'fear' %}😨
+          {% elif complaint.emotion_label|lower == 'sadness' %}😢
+          {% elif complaint.emotion_label|lower == 'disgust' %}🤢
+          {% elif complaint.emotion_label|lower == 'joy' %}😊
+          {% elif complaint.emotion_label|lower == 'surprise' %}😲
+          {% else %}😐{% endif %}
+          {{ complaint.emotion_label }}
+        </span>
+      </div>
+      <div class="meter">
+        <div class="meter-header">
+          <span>Intensity</span>
+          <span>{{ "%.0f"|format(complaint.emotion_score * 100) }}%</span>
+        </div>
+        <div class="meter-bar">
+          <div class="meter-fill" style="width:{{ "%.0f"|format(complaint.emotion_score * 100) }}%;background:var(--purple)"></div>
+        </div>
+      </div>
+
+      <!-- Priority -->
+      <div class="info-row">
+        <span class="info-label">Priority Score</span>
+        <span class="mono" style="color:var(--text)">{{ complaint.priority_score }} / 100</span>
+      </div>
+      <div class="meter">
+        <div class="meter-bar">
+          <div class="meter-fill" style="width:{{ complaint.priority_score }}%;
+            background:{% if complaint.priority == 'CRITICAL' %}#ef4444{% elif complaint.priority == 'HIGH' %}#f97316{% elif complaint.priority == 'MEDIUM' %}#eab308{% else %}#22c55e{% endif %}">
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:11px;color:var(--muted);padding:10px 0;line-height:1.6;border-top:1px solid var(--border);margin-top:8px">
+        {{ complaint.priority_description }}
+      </div>
+
+      <!-- Timeline -->
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+        <div class="info-row">
+          <span class="info-label">Submitted</span>
+          <span class="mono" style="font-size:10px">{{ complaint.created_at[:16] | replace("T"," ") }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Last Updated</span>
+          <span class="mono" style="font-size:10px">{{ complaint.updated_at[:16] | replace("T"," ") }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

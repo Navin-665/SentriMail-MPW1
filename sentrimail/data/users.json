@@ -1,0 +1,32 @@
+[
+  {
+    "username": "admin",
+    "password": "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9",
+    "email": "admin@sentrimail.io",
+    "role": "admin"
+  },
+  {
+    "username": "alice",
+    "password": "4e40e8ffe0ee32fa53e139147ed559229a5930f89c2204706fc174beb36210b3",
+    "email": "alice@example.com",
+    "role": "user"
+  },
+  {
+    "username": "bob",
+    "password": "8d059c3640b97180dd2ee453e20d34ab0cb0f2eccbe87d01915a8e578a202b11",
+    "email": "bob@example.com",
+    "role": "user"
+  },
+  {
+    "username": "Lohith",
+    "password": "9340b46c1c988cc89609912b7b72907265c7e70771f31670738277ba48fbc38d",
+    "email": "lohith@gmai.lcom",
+    "role": "user"
+  },
+  {
+    "username": "lohith",
+    "password": "ddcfe88cf48b6d18fc8805ce7cd98585f1504977ce561d2938d813622d79fc46",
+    "email": "lohith@gmail.com",
+    "role": "user"
+  }
+]

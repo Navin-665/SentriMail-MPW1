@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}My Complaint #{{ complaint.id }} — SentriMail{% endblock %}
+
+{% block nav_links %}
+<a href="/user/dashboard" class="nav-link">← Back to Dashboard</a>
+<a href="/user/submit" class="nav-link">Submit Complaint</a>
+{% endblock %}
+
+{% block content %}
+<div class="fade-up">
+  <div style="margin-bottom:24px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+      <span class="mono" style="color:var(--blue);font-size:16px">#{{ complaint.id }}</span>
+      <span class="status-badge status-{{ complaint.status }}">
+        {{ complaint.status | replace('_', ' ') | title }}
+      </span>
+    </div>
+    <h1 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px">
+      {{ complaint.title }}
+    </h1>
+    <div style="font-size:12px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap">
+      <span>📂 {{ complaint.category | title }}</span>
+      <span>📅 {{ complaint.created_at[:10] }}</span>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div style="font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px">
+      Complaint Description
+    </div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:14px;color:var(--subtle);line-height:1.8;white-space:pre-wrap">
+      {{ complaint.description }}
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px">
+      Response From Support
+    </div>
+    {% if complaint.admin_response %}
+      <div style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.15);border-radius:10px;padding:16px;font-size:13px;color:var(--subtle);line-height:1.7;white-space:pre-wrap;font-family:'DM Mono',monospace">
+        {{ complaint.admin_response }}
+      </div>
+    {% elif complaint.priority == 'LOW' %}
+      <div style="font-size:12px;color:var(--muted);line-height:1.6">
+        Your complaint was classified as <strong>LOW priority</strong>. An automatic reply has been prepared and will appear here shortly.
+      </div>
+    {% else %}
+      <div style="font-size:12px;color:var(--muted);line-height:1.6">
+        Our team is reviewing your complaint. You’ll see the official response here once it’s ready.
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+

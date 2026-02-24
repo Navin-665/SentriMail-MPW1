@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — SentriMail{% endblock %}
+
+{% block nav_links %}
+<a href="/admin/dashboard" class="nav-link">Inbox</a>
+<a href="/admin/users" class="nav-link">Users</a>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted);
+  transition: all 0.2s;
+}
+.filter-btn:hover, .filter-btn.active { border-color: var(--blue); color: var(--blue); background: rgba(59,130,246,0.08); }
+.complaint-row { cursor: pointer; }
+.complaint-row:hover td { background: rgba(59,130,246,0.03) !important; }
+.emotion-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--subtle);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="fade-up">
+  <div class="section-header">
+    <div>
+      <div class="section-title">Admin Inbox</div>
+      <div class="section-sub">AI-prioritized complaint management center</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite;display:inline-block"></span>
+      <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">Live</span>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stat-grid fade-up-1">
+    <div class="stat-card stat-blue">
+      <div class="stat-value">{{ stats.total }}</div>
+      <div class="stat-label">Total</div>
+    </div>
+    <div class="stat-card stat-rose">
+      <div class="stat-value">{{ stats.critical }}</div>
+      <div class="stat-label">Critical</div>
+    </div>
+    <div class="stat-card" style="border-top: 2px solid #f97316;">
+      <div class="stat-value">{{ stats.high }}</div>
+      <div class="stat-label">High</div>
+    </div>
+    <div class="stat-card stat-amber">
+      <div class="stat-value">{{ stats.medium }}</div>
+      <div class="stat-label">Medium</div>
+    </div>
+    <div class="stat-card stat-green">
+      <div class="stat-value">{{ stats.low }}</div>
+      <div class="stat-label">Low</div>
+    </div>
+    <div class="stat-card stat-purple">
+      <div class="stat-value">{{ stats.pending }}</div>
+      <div class="stat-label">Pending</div>
+    </div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar fade-up-2">
+    <button class="filter-btn active" onclick="filterTable('ALL', this)">All</button>
+    <button class="filter-btn" onclick="filterTable('CRITICAL', this)">🔴 Critical</button>
+    <button class="filter-btn" onclick="filterTable('HIGH', this)">🟠 High</button>
+    <button class="filter-btn" onclick="filterTable('MEDIUM', this)">🟡 Medium</button>
+    <button class="filter-btn" onclick="filterTable('LOW', this)">🟢 Low</button>
+    <button class="filter-btn" onclick="filterTable('pending', this)" style="margin-left:auto">⏳ Pending</button>
+    <button class="filter-btn" onclick="filterTable('resolved', this)">✅ Resolved</button>
+  </div>
+
+  <!-- Table -->
+  <div class="card fade-up-3">
+    {% if complaints %}
+    <div class="table-wrap">
+      <table id="complaints-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>User</th>
+            <th>Category</th>
+            <th>Sentiment</th>
+            <th>Emotion</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in complaints %}
+          <tr class="complaint-row"
+              data-priority="{{ c.priority }}"
+              data-status="{{ c.status }}"
+              onclick="window.location='/admin/complaint/{{ c.id }}'">
+            <td><span class="mono" style="color:var(--blue)">#{{ c.id }}</span></td>
+            <td class="td-title" title="{{ c.title }}">{{ c.title }}</td>
+            <td><span style="font-size:12px;color:var(--subtle)">{{ c.username }}</span></td>
+            <td><span style="font-size:12px;color:var(--muted)">{{ c.category | title }}</span></td>
+            <td>
+              <span style="font-size:11px;font-family:'DM Mono',monospace;
+                color:{% if c.sentiment_label == 'NEGATIVE' %}#f43f5e{% elif c.sentiment_label == 'POSITIVE' %}#10b981{% else %}#94a3b8{% endif %}">
+                {{ c.sentiment_label }}
+              </span>
+            </td>
+            <td>
+              <span class="emotion-tag">
+                {% if c.emotion_label|lower == 'anger' %}😡
+                {% elif c.emotion_label|lower == 'fear' %}😨
+                {% elif c.emotion_label|lower == 'sadness' %}😢
+                {% elif c.emotion_label|lower == 'disgust' %}🤢
+                {% elif c.emotion_label|lower == 'joy' %}😊
+                {% elif c.emotion_label|lower == 'surprise' %}😲
+                {% else %}😐{% endif %}
+                {{ c.emotion_label }}
+              </span>
+            </td>
+            <td>
+              <span class="priority-badge priority-{{ c.priority }}">
+                {% if c.priority == 'CRITICAL' %}🔴{% elif c.priority == 'HIGH' %}🟠{% elif c.priority == 'MEDIUM' %}🟡{% else %}🟢{% endif %}
+                {{ c.priority }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge status-{{ c.status }}">
+                {{ c.status | replace('_', ' ') | title }}
+              </span>
+            </td>
+            <td><span class="mono">{{ c.created_at[:10] }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">No complaints in the system</div>
+      <div class="empty-desc">Complaints will appear here once users submit them</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterTable(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('#complaints-table tbody tr').forEach(row => {
+    if (filter === 'ALL') {
+      row.style.display = '';
+    } else if (['CRITICAL','HIGH','MEDIUM','LOW'].includes(filter)) {
+      row.style.display = row.dataset.priority === filter ? '' : 'none';
+    } else {
+      row.style.display = row.dataset.status === filter ? '' : 'none';
+    }
+  });
+}
+</script>
+{% endblock %}
