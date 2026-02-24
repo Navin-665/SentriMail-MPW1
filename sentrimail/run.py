@@ -15,10 +15,12 @@ if hasattr(sys.stdout, "reconfigure"):
         pass
 
 # Ensure the project root is in the path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, PROJECT_ROOT)
 
-# Create data directory
-os.makedirs("data", exist_ok=True)
+# Create data directory with absolute path
+DATA_DIR = os.path.join(PROJECT_ROOT, "data")
+os.makedirs(DATA_DIR, exist_ok=True)
 
 if __name__ == "__main__":
     print("\n" + "="*50)
