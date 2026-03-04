@@ -3,6 +3,8 @@ import os
 import uuid
 from datetime import datetime
 from typing import List, Dict, Any
+from app.firebase_config import db
+import uuid
 
 
 # --------------------------------------------------
@@ -51,9 +53,18 @@ def _save_json(path: str, data):
 # Complaints
 # --------------------------------------------------
 
-def get_all_complaints() -> List[Dict]:
-    return _load_json(COMPLAINTS_FILE)
+def get_all_complaints():
 
+    docs = db.collection("complaints").stream()
+
+    complaints = []
+
+    for doc in docs:
+        data = doc.to_dict()
+        data["id"] = doc.id
+        complaints.append(data)
+
+    return complaints
 
 def get_user_complaints(username: str) -> List[Dict]:
     complaints = _load_json(COMPLAINTS_FILE)
@@ -65,51 +76,27 @@ def get_user_complaints(username: str) -> List[Dict]:
     )
 
 
-def get_complaint_by_id(complaint_id: str) -> Dict | None:
-    complaints = _load_json(COMPLAINTS_FILE)
+def get_complaint_by_id(cid):
 
-    return next(
-        (c for c in complaints if c.get("id") == complaint_id),
-        None,
-    )
+    doc = db.collection("complaints").document(cid).get()
+
+    if doc.exists:
+        data = doc.to_dict()
+        data["id"] = doc.id
+        return data
+
+    return None
 
 
-def save_complaint(data: Dict[str, Any]) -> Dict:
+def save_complaint(data):
 
-    complaints = _load_json(COMPLAINTS_FILE)
+    complaint_id = str(uuid.uuid4())
 
-    complaint = {
-        "id": str(uuid.uuid4())[:8].upper(),
-        "title": data.get("title", ""),
-        "category": data.get("category", "other"),
-        "description": data.get("description", ""),
-        "username": data.get("username", ""),
-        "email": data.get("email", ""),
-        "status": data.get("status", "pending"),
-        "created_at": datetime.now().isoformat(),
-        "updated_at": datetime.now().isoformat(),
+    db.collection("complaints").document(complaint_id).set(data)
 
-        # AI fields
-        "sentiment_label": data.get("sentiment_label", "NEUTRAL"),
-        "sentiment_score": data.get("sentiment_score", 0.5),
-        "emotion_label": data.get("emotion_label", "Neutral"),
-        "emotion_score": data.get("emotion_score", 0.5),
-        "priority": data.get("priority", "LOW"),
-        "priority_color": data.get("priority_color", "#22c55e"),
-        "priority_score": data.get("priority_score", 0),
-        "priority_description": data.get("priority_description", ""),
-        "root_cause_summary": data.get("root_cause_summary", ""),
-        "ai_suggested_response": data.get("ai_suggested_response", ""),
-        "model_used": data.get("model_used", "lightweight"),
-        "admin_response": data.get("admin_response", ""),
-    }
+    data["id"] = complaint_id
 
-    complaints.append(complaint)
-
-    _save_json(COMPLAINTS_FILE, complaints)
-
-    return complaint
-
+    return data
 
 def update_complaint_status(complaint_id: str, status: str) -> bool:
 
