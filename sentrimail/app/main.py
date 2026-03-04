@@ -6,6 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
 import sys
+from datetime import datetime
+from app.firebase_config import db
+
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -63,17 +66,26 @@ async def login_page(request: Request, error: str = None):
 
 @app.post("/login")
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
+
     user = authenticate_user(username, password)
+
     if not user:
         return templates.TemplateResponse("login.html", {
             "request": request,
             "error": "Invalid credentials. Please try again."
         })
+
+    # 🔹 Save login event
+    db.collection("login_logs").add({
+        "username": username,
+        "role": user.get("role"),
+        "login_time": datetime.utcnow().isoformat()
+    })
+
     response = RedirectResponse("/", status_code=302)
     create_session(response, user)
+
     return response
-
-
 @app.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request, error: str = None, success: str = None):
     return templates.TemplateResponse("register.html", {"request": request, "error": error, "success": success})
