@@ -111,8 +111,12 @@ def get_current_user(request: Request) -> Optional[dict]:
     return SESSIONS.get(token)
 
 
-def logout_user(response: Response):
+def logout_user(request: Request, response: Response):
+    token = request.cookies.get(SESSION_COOKIE)
+    if token:
+        SESSIONS.pop(token, None)
     response.delete_cookie(SESSION_COOKIE)
+
 
 
 def get_all_users() -> list:

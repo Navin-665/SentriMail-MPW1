@@ -225,8 +225,9 @@ async def register(request: Request, username: str = Form(...), password: str = 
 @app.get("/logout")
 async def logout(request: Request):
     response = RedirectResponse("/login", status_code=302)
-    logout_user(response)
+    logout_user(request, response)
     return response
+
 
 
 # ─── User Routes ────────────────────────────────────────────────
