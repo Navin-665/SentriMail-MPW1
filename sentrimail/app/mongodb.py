@@ -9,8 +9,23 @@ from pymongo import ASCENDING, MongoClient
 
 logger = logging.getLogger(__name__)
 
+# Load .env file manually if present
+_PROJECT_ROOT = Path(__file__).resolve().parents[1]
+_ENV_PATH = _PROJECT_ROOT / ".env"
+if _ENV_PATH.exists():
+    try:
+        with open(_ENV_PATH, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, val = line.split("=", 1)
+                    os.environ[key.strip()] = val.strip()
+    except Exception as e:
+        pass
+
 MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
 MONGODB_DB_NAME = os.getenv("MONGODB_DB_NAME", "sentrimail")
+
 
 _client = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=5000)
 _mongo_db = _client[MONGODB_DB_NAME]

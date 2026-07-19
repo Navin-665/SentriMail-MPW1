@@ -394,7 +394,7 @@ async def submit_complaint(
             "analysis": analysis,
             "title": title,
             "complaint": complaint,
-            "auto_resolved": auto_resolvable,
+            "auto_resolved": analysis.get("auto_resolvable", False),
         },
     )
 
