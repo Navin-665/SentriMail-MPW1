@@ -21,6 +21,9 @@ Each project has a research paper (IEEE two-column) in [`research_publications/`
 
 The full experiment history, including rejected experiments (label-smoothing collapse, MMI decoding, PMI filter, neuron steering, urgency head), is in [`sentriformer/wsp_runs/WSP_FINAL_REPORT.md`](sentriformer/wsp_runs/WSP_FINAL_REPORT.md) and the `*_DECISION.md` files.
 
+
+**All training and metric figures** (tokenizer, pre-training, multi-task/SFT training curves, confusion matrices, CIs): [`docs/figures/training_and_metrics/`](docs/figures/training_and_metrics/README.md) · raw-data analysis: [`docs/data_analysis/`](docs/data_analysis/README.md)
+
 ## Repository layout
 
 ```
