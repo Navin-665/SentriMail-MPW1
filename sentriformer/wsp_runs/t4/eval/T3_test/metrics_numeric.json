@@ -1,0 +1,24 @@
+{
+ "ckpt": "wsp_runs/FINAL_T3/sentriformer_t3.pt",
+ "fmt": "raw",
+ "loss_all_val": 2.569280732052973,
+ "loss_rows_with_history": 2.8803972052310245,
+ "n_val": 28907,
+ "n_with_history": 7246,
+ "generation_300_with_history": {
+  "portal_loop_rate": 0.31333333333333335,
+  "redirect_any_rate": 0.3233333333333333,
+  "orphan_rate": 0.03,
+  "eos_rate": 1.0,
+  "repetition_rate": 0.0,
+  "rougeL": 0.1156238191117917,
+  "distinct_2": 0.14914572864321607,
+  "mean_words": 17.583333333333332,
+  "reference_portal_loop_rate": 0.15
+ },
+ "context_correctness": {
+  "n": 203,
+  "reask_rate": 0.0,
+  "ack_proxy_rate": 0.054187192118226604
+ }
+}

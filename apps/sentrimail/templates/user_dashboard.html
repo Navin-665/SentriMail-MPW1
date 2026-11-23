@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard — SentriMail{% endblock %}
+
+{% block nav_links %}
+<a href="/user/dashboard" class="nav-link">Dashboard</a>
+<a href="/user/submit" class="nav-link">Submit Complaint</a>
+{% endblock %}
+
+{% block content %}
+<div class="fade-up">
+  <div class="section-header">
+    <div>
+      <div class="section-title">My Complaints</div>
+      <div class="section-sub">Track and manage your submitted complaints</div>
+    </div>
+    <a href="/user/submit" class="btn btn-primary">+ New Complaint</a>
+  </div>
+
+  <div class="stat-grid fade-up-1">
+    <div class="stat-card stat-blue">
+      <div class="stat-value">{{ total }}</div>
+      <div class="stat-label">Total Submitted</div>
+    </div>
+    <div class="stat-card stat-amber">
+      <div class="stat-value">{{ pending }}</div>
+      <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card stat-green">
+      <div class="stat-value">{{ resolved }}</div>
+      <div class="stat-label">Resolved</div>
+    </div>
+  </div>
+
+  <div class="card fade-up-2">
+    {% if complaints %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Response</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in complaints %}
+          <tr>
+            <td>
+              <a href="/user/complaint/{{ c.id }}" class="mono" style="color:var(--blue);text-decoration:none">
+                #{{ c.id }}
+              </a>
+            </td>
+            <td class="td-title" title="{{ c.title }}">
+              <a href="/user/complaint/{{ c.id }}" style="color:inherit;text-decoration:none">
+                {{ c.title }}
+              </a>
+            </td>
+            <td><span style="color:var(--subtle);font-size:12px">{{ c.category | title }}</span></td>
+            <td>
+              <span class="status-badge status-{{ c.status }}">
+                {{ c.status | replace('_', ' ') | title }}
+              </span>
+            </td>
+            <td><span class="mono">{{ c.created_at[:10] }}</span></td>
+            <td>
+              {% if c.admin_response %}
+                <span style="font-size:11px;color:var(--subtle)">View</span>
+              {% else %}
+                <span style="font-size:11px;color:var(--muted)">Pending</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <div class="empty-title">No complaints yet</div>
+      <div class="empty-desc">Submit your first complaint to get started</div>
+      <br>
+      <a href="/user/submit" class="btn btn-primary" style="display:inline-flex">+ Submit Complaint</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

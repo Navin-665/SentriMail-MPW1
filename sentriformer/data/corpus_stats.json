@@ -1,0 +1,26 @@
+{
+  "build_timestamp": "2026-09-01 21:03:31",
+  "total_canonical_records": 3538711,
+  "skipped_malformed": 6,
+  "splits": {
+    "train": {
+      "count": 3184956,
+      "percentage": 90.0
+    },
+    "val": {
+      "count": 176586,
+      "percentage": 4.99
+    },
+    "test": {
+      "count": 177169,
+      "percentage": 5.01
+    }
+  },
+  "sources": {
+    "customer_support": 16936,
+    "bitext": 24272,
+    "twcs": 1049079,
+    "cfpb": 2448422
+  },
+  "leakage_audit": "PASSED (Zero leakage confirmed across groups)"
+}

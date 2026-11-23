@@ -1,0 +1,5 @@
+T5 criteria frozen 2026-11-08 22:48:03 before training
+eab639617e365572cd9bbfe21588d7455918f4da6d8048c80213563a8d87ebbf *wsp_runs/t5/T5_CRITERIA.md
+aa67fab22734bf0443a7fa9c9e19fbfd429eea24deaf24fd9f1451fe95eb5fd4 *wsp_runs/t4/data/t5a_train.parquet
+b294af8d2108cc1145e2f18c38380878d14e973f45f604aa46ccbe4dd2ea000f *wsp_runs/t4/data/t5a_ctrl_train.parquet
+bff705ec24b9916880c9df4b16eda284f961814f05828c09e61208b384af1efe *wsp_runs/FINAL_T4d/sentriformer_t4d.pt

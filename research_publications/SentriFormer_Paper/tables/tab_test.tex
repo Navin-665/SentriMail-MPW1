@@ -1,0 +1,26 @@
+\begin{table*}[t]
+\centering
+\caption{Sealed test-set results. Each checkpoint was scored on the test split exactly once, after selection on validation data. Routing at 512 tokens unless noted; $n$ = test rows. Best multi-task value in bold.}
+\label{tab:test}
+\footnotesize
+\setlength{\tabcolsep}{4.2pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lcccccc|c@{}}
+\toprule
+Metric (test) & M9.2 specialist & M9.5 joint & M10.3 SFT & E1 ridge repair & T3 & T4d & Reference \\
+\midrule
+Routing accuracy (\%) ($n$=123{,}229) & 79.15 & 73.99 & 39.59 & 63.74 & 72.42 & \textbf{73.71} & majority 27.2 \\
+Routing accuracy @128 tokens (\%) & 76.90 & 73.29 & 42.27 & 63.35 & 70.98 & \textbf{72.23} & -- \\
+Routing macro-F1 / weighted-F1 & 0.404 / 0.789 & 0.317 / 0.734 & 0.078 / 0.388 & 0.205 / 0.618 & 0.353 / 0.725 & \textbf{0.369} / \textbf{0.737} & -- \\
+Routing ECE (15 bins) & 0.051 & \textbf{0.048} & 0.165 & 0.069 & 0.058 & 0.055 & -- \\
+CSAT exact / within-1 (\%) ($n$=870) & -- & 73.56 / 81.72 & 66.90 / 73.68 & \textbf{73.91} / \textbf{82.30} & 73.33 / 82.18 & 72.41 / 81.95 & -- \\
+CSAT MAE / macro-F1 & -- & 0.732 / 0.317 & 1.030 / 0.278 & 0.717 / 0.311 & 0.714 / \textbf{0.361} & \textbf{0.708} / 0.352 & -- \\
+Sentiment acc.\ (\%) / macro-F1 ($n$=20{,}453) & -- & -- & -- & -- & 87.2 / 0.742 & \textbf{88.1} / \textbf{0.758} & majority 79.6 \\
+\quad human-labelled subset ($n$=3{,}012) & -- & -- & -- & -- & 61.6 / 0.531 & \textbf{63.7} / \textbf{0.552} & -- \\
+Dialogue loss / perplexity ($n$=31{,}912) & -- & invalid$^\dagger$ & -- & -- & 2.782 / 16.14 & \textbf{2.769} / \textbf{15.94} & -- \\
+Portal-loop replies, multi-turn (\%) & -- & -- & -- & -- & 31.3 & \textbf{0.7} & human agents 15 \\
+ROUGE-L / distinct-2 (300 contexts) & -- & -- & -- & -- & \textbf{0.135} / 0.209 & 0.132 / \textbf{0.235} & -- \\
+\bottomrule
+\multicolumn{8}{@{}l}{\scriptsize $^\dagger$M9.5 reported a perplexity of 1.04 caused by a causal-mask leak; it is excluded. The specialist M9.2 has no other heads trained. Urgency is reported separately in Section~\ref{sec:neg}.}
+\end{tabular}}
+\end{table*}

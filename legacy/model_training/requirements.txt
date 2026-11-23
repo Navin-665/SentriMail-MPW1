@@ -1,0 +1,8 @@
+pandas
+pyarrow
+datasets
+transformers
+torch
+scikit-learn
+langdetect
+sentencepiece

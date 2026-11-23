@@ -1,0 +1,24 @@
+{
+ "ckpt": "wsp_runs/train/T5a/model_best.pt",
+ "fmt": "multi",
+ "loss_all_val": 2.509067863225937,
+ "loss_rows_with_history": 2.7254540814568946,
+ "n_val": 28454,
+ "n_with_history": 7294,
+ "generation_300_with_history": {
+  "portal_loop_rate": 0.01,
+  "redirect_any_rate": 0.016666666666666666,
+  "orphan_rate": 0.006666666666666667,
+  "eos_rate": 1.0,
+  "repetition_rate": 0.0,
+  "rougeL": 0.1267694007427799,
+  "distinct_2": 0.23182534323655188,
+  "mean_words": 15.81,
+  "reference_portal_loop_rate": 0.15
+ },
+ "context_correctness": {
+  "n": 229,
+  "reask_rate": 0.013100436681222707,
+  "ack_proxy_rate": 0.2794759825327511
+ }
+}

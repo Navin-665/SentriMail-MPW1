@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+*.log
+*.blg
+*.aux
+*.synctex.gz
+# corpus / data never committed
+*.parquet
+*.jsonl
+*.csv
+*.npy
+*.npz
+*LOCAL_ONLY*
+apps/sentrimail/data/*.json
+# checkpoints: only the deployed one is allowed
+*.pt
+!sentriformer/wsp_runs/FINAL_T5a/sentriformer_t5a.pt

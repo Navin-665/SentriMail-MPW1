@@ -1,0 +1,405 @@
+% references.bib -- SentriFormer paper
+% Every entry was checked against ACL Anthology / Crossref / publisher / arXiv / proceedings pages
+% (see ../_lit/literature_review.md, verification table). Use with \bibliographystyle{IEEEtran}.
+
+% ---------------- Architecture and pre-training ----------------
+@inproceedings{vaswani2017attention,
+  author    = {Ashish Vaswani and Noam Shazeer and Niki Parmar and Jakob Uszkoreit and Llion Jones and Aidan N. Gomez and {\L}ukasz Kaiser and Illia Polosukhin},
+  title     = {Attention Is All You Need},
+  booktitle = {Advances in Neural Information Processing Systems 30 (NIPS 2017)},
+  pages     = {5998--6008},
+  year      = {2017},
+  url       = {https://proceedings.neurips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html}
+}
+
+@inproceedings{sutskever2014sequence,
+  author    = {Ilya Sutskever and Oriol Vinyals and Quoc V. Le},
+  title     = {Sequence to Sequence Learning with Neural Networks},
+  booktitle = {Advances in Neural Information Processing Systems 27 (NIPS 2014)},
+  pages     = {3104--3112},
+  year      = {2014},
+  url       = {https://proceedings.neurips.cc/paper/2014/hash/5a18e133cbf9f257297f410bb7eca942-Abstract.html}
+}
+
+@inproceedings{devlin2019bert,
+  author    = {Jacob Devlin and Ming-Wei Chang and Kenton Lee and Kristina Toutanova},
+  title     = {{BERT}: Pre-training of Deep Bidirectional Transformers for Language Understanding},
+  booktitle = {Proc. 2019 Conf. North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)},
+  pages     = {4171--4186},
+  year      = {2019},
+  doi       = {10.18653/v1/N19-1423}
+}
+
+@article{raffel2020exploring,
+  author  = {Colin Raffel and Noam Shazeer and Adam Roberts and Katherine Lee and Sharan Narang and Michael Matena and Yanqi Zhou and Wei Li and Peter J. Liu},
+  title   = {Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer},
+  journal = {Journal of Machine Learning Research},
+  volume  = {21},
+  number  = {140},
+  pages   = {1--67},
+  year    = {2020},
+  url     = {https://jmlr.org/papers/v21/20-074.html}
+}
+
+@inproceedings{lewis2020bart,
+  author    = {Mike Lewis and Yinhan Liu and Naman Goyal and Marjan Ghazvininejad and Abdelrahman Mohamed and Omer Levy and Veselin Stoyanov and Luke Zettlemoyer},
+  title     = {{BART}: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension},
+  booktitle = {Proc. 58th Annual Meeting of the Association for Computational Linguistics (ACL)},
+  pages     = {7871--7880},
+  year      = {2020},
+  doi       = {10.18653/v1/2020.acl-main.703}
+}
+
+@inproceedings{xiong2020layer,
+  author    = {Ruibin Xiong and Yunchang Yang and Di He and Kai Zheng and Shuxin Zheng and Chen Xing and Huishuai Zhang and Yanyan Lan and Liwei Wang and Tie-Yan Liu},
+  title     = {On Layer Normalization in the Transformer Architecture},
+  booktitle = {Proc. 37th International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {119},
+  pages     = {10524--10533},
+  year      = {2020},
+  url       = {https://proceedings.mlr.press/v119/xiong20b.html}
+}
+
+% ---------------- Optimisation, regularisation, class imbalance ----------------
+@inproceedings{kingma2015adam,
+  author    = {Diederik P. Kingma and Jimmy Ba},
+  title     = {Adam: A Method for Stochastic Optimization},
+  booktitle = {Proc. 3rd International Conference on Learning Representations (ICLR)},
+  year      = {2015},
+  url       = {https://arxiv.org/abs/1412.6980}
+}
+
+@inproceedings{loshchilov2019decoupled,
+  author    = {Ilya Loshchilov and Frank Hutter},
+  title     = {Decoupled Weight Decay Regularization},
+  booktitle = {Proc. 7th International Conference on Learning Representations (ICLR)},
+  year      = {2019},
+  url       = {https://arxiv.org/abs/1711.05101}
+}
+
+@inproceedings{szegedy2016rethinking,
+  author    = {Christian Szegedy and Vincent Vanhoucke and Sergey Ioffe and Jon Shlens and Zbigniew Wojna},
+  title     = {Rethinking the Inception Architecture for Computer Vision},
+  booktitle = {Proc. IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {2818--2826},
+  year      = {2016},
+  doi       = {10.1109/CVPR.2016.308}
+}
+
+@inproceedings{muller2019labelsmoothing,
+  author    = {Rafael M{\"u}ller and Simon Kornblith and Geoffrey E. Hinton},
+  title     = {When Does Label Smoothing Help?},
+  booktitle = {Advances in Neural Information Processing Systems 32 (NeurIPS 2019)},
+  year      = {2019},
+  url       = {https://proceedings.neurips.cc/paper/2019/hash/f1748d6b0fd9d439f71450117eba2725-Abstract.html}
+}
+
+@inproceedings{lin2017focal,
+  author    = {Tsung-Yi Lin and Priya Goyal and Ross Girshick and Kaiming He and Piotr Doll{\'a}r},
+  title     = {Focal Loss for Dense Object Detection},
+  booktitle = {Proc. IEEE International Conference on Computer Vision (ICCV)},
+  pages     = {2999--3007},
+  year      = {2017},
+  doi       = {10.1109/ICCV.2017.324}
+}
+
+@inproceedings{cui2019classbalanced,
+  author    = {Yin Cui and Menglin Jia and Tsung-Yi Lin and Yang Song and Serge Belongie},
+  title     = {Class-Balanced Loss Based on Effective Number of Samples},
+  booktitle = {Proc. IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {9260--9269},
+  year      = {2019},
+  doi       = {10.1109/CVPR.2019.00949}
+}
+
+% ---------------- Tokenisation ----------------
+@inproceedings{sennrich2016neural,
+  author    = {Rico Sennrich and Barry Haddow and Alexandra Birch},
+  title     = {Neural Machine Translation of Rare Words with Subword Units},
+  booktitle = {Proc. 54th Annual Meeting of the Association for Computational Linguistics (ACL), Volume 1: Long Papers},
+  pages     = {1715--1725},
+  year      = {2016},
+  doi       = {10.18653/v1/P16-1162}
+}
+
+@inproceedings{kudo2018sentencepiece,
+  author    = {Taku Kudo and John Richardson},
+  title     = {{SentencePiece}: A Simple and Language Independent Subword Tokenizer and Detokenizer for Neural Text Processing},
+  booktitle = {Proc. 2018 Conf. Empirical Methods in Natural Language Processing: System Demonstrations (EMNLP)},
+  pages     = {66--71},
+  year      = {2018},
+  doi       = {10.18653/v1/D18-2012}
+}
+
+% ---------------- Multi-task learning ----------------
+@article{caruana1997multitask,
+  author  = {Rich Caruana},
+  title   = {Multitask Learning},
+  journal = {Machine Learning},
+  volume  = {28},
+  number  = {1},
+  pages   = {41--75},
+  year    = {1997},
+  doi     = {10.1023/A:1007379606734}
+}
+
+@misc{ruder2017overview,
+  author       = {Sebastian Ruder},
+  title        = {An Overview of Multi-Task Learning in Deep Neural Networks},
+  howpublished = {arXiv preprint arXiv:1706.05098},
+  year         = {2017},
+  url          = {https://arxiv.org/abs/1706.05098}
+}
+
+@inproceedings{kendall2018multitask,
+  author    = {Alex Kendall and Yarin Gal and Roberto Cipolla},
+  title     = {Multi-Task Learning Using Uncertainty to Weigh Losses for Scene Geometry and Semantics},
+  booktitle = {Proc. IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {7482--7491},
+  year      = {2018},
+  doi       = {10.1109/CVPR.2018.00781}
+}
+
+@article{zhang2022survey,
+  author  = {Yu Zhang and Qiang Yang},
+  title   = {A Survey on Multi-Task Learning},
+  journal = {IEEE Transactions on Knowledge and Data Engineering},
+  volume  = {34},
+  number  = {12},
+  pages   = {5586--5609},
+  year    = {2022},
+  doi     = {10.1109/TKDE.2021.3070203}
+}
+
+% ---------------- Neural dialogue, generic responses, decoding, data filtering ----------------
+@misc{vinyals2015neural,
+  author       = {Oriol Vinyals and Quoc V. Le},
+  title        = {A Neural Conversational Model},
+  howpublished = {ICML Deep Learning Workshop; arXiv preprint arXiv:1506.05869},
+  year         = {2015},
+  url          = {https://arxiv.org/abs/1506.05869}
+}
+
+@inproceedings{li2016diversity,
+  author    = {Jiwei Li and Michel Galley and Chris Brockett and Jianfeng Gao and Bill Dolan},
+  title     = {A Diversity-Promoting Objective Function for Neural Conversation Models},
+  booktitle = {Proc. 2016 Conf. North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)},
+  pages     = {110--119},
+  year      = {2016},
+  doi       = {10.18653/v1/N16-1014}
+}
+
+@inproceedings{holtzman2020curious,
+  author    = {Ari Holtzman and Jan Buys and Li Du and Maxwell Forbes and Yejin Choi},
+  title     = {The Curious Case of Neural Text Degeneration},
+  booktitle = {Proc. 8th International Conference on Learning Representations (ICLR)},
+  year      = {2020},
+  url       = {https://arxiv.org/abs/1904.09751}
+}
+
+@inproceedings{welleck2020neural,
+  author    = {Sean Welleck and Ilia Kulikov and Stephen Roller and Emily Dinan and Kyunghyun Cho and Jason Weston},
+  title     = {Neural Text Generation with Unlikelihood Training},
+  booktitle = {Proc. 8th International Conference on Learning Representations (ICLR)},
+  year      = {2020},
+  url       = {https://arxiv.org/abs/1908.04319}
+}
+
+@inproceedings{su2022contrastive,
+  author    = {Yixuan Su and Tian Lan and Yan Wang and Dani Yogatama and Lingpeng Kong and Nigel Collier},
+  title     = {A Contrastive Framework for Neural Text Generation},
+  booktitle = {Advances in Neural Information Processing Systems 35 (NeurIPS 2022)},
+  pages     = {21548--21561},
+  year      = {2022},
+  url       = {https://proceedings.neurips.cc/paper_files/paper/2022/hash/871cae8f599cb8bbfcb0f58fe1af95ad-Abstract.html}
+}
+
+@inproceedings{csaky2019improving,
+  author    = {Rich{\'a}rd Cs{\'a}ky and Patrik Purgai and G{\'a}bor Recski},
+  title     = {Improving Neural Conversational Models with Entropy-Based Data Filtering},
+  booktitle = {Proc. 57th Annual Meeting of the Association for Computational Linguistics (ACL)},
+  pages     = {5650--5669},
+  year      = {2019},
+  doi       = {10.18653/v1/P19-1567}
+}
+
+@inproceedings{akama2020filtering,
+  author    = {Reina Akama and Sho Yokoi and Jun Suzuki and Kentaro Inui},
+  title     = {Filtering Noisy Dialogue Corpora by Connectivity and Content Relatedness},
+  booktitle = {Proc. 2020 Conf. Empirical Methods in Natural Language Processing (EMNLP)},
+  pages     = {941--958},
+  year      = {2020},
+  doi       = {10.18653/v1/2020.emnlp-main.68}
+}
+
+@inproceedings{tevet2021evaluating,
+  author    = {Guy Tevet and Jonathan Berant},
+  title     = {Evaluating the Evaluation of Diversity in Natural Language Generation},
+  booktitle = {Proc. 16th Conf. European Chapter of the Association for Computational Linguistics (EACL): Main Volume},
+  pages     = {326--346},
+  year      = {2021},
+  doi       = {10.18653/v1/2021.eacl-main.25}
+}
+
+@inproceedings{zhang2020dialogpt,
+  author    = {Yizhe Zhang and Siqi Sun and Michel Galley and Yen-Chun Chen and Chris Brockett and Xiang Gao and Jianfeng Gao and Jingjing Liu and Bill Dolan},
+  title     = {{DIALOGPT}: Large-Scale Generative Pre-training for Conversational Response Generation},
+  booktitle = {Proc. 58th Annual Meeting of the Association for Computational Linguistics: System Demonstrations (ACL)},
+  pages     = {270--278},
+  year      = {2020},
+  doi       = {10.18653/v1/2020.acl-demos.30}
+}
+
+% ---------------- Small / efficient Transformers ----------------
+@misc{sanh2019distilbert,
+  author       = {Victor Sanh and Lysandre Debut and Julien Chaumond and Thomas Wolf},
+  title        = {{DistilBERT}, a Distilled Version of {BERT}: Smaller, Faster, Cheaper and Lighter},
+  howpublished = {5th Workshop on Energy Efficient Machine Learning and Cognitive Computing (NeurIPS 2019); arXiv preprint arXiv:1910.01108},
+  year         = {2019},
+  url          = {https://arxiv.org/abs/1910.01108}
+}
+
+@inproceedings{jiao2020tinybert,
+  author    = {Xiaoqi Jiao and Yichun Yin and Lifeng Shang and Xin Jiang and Xiao Chen and Linlin Li and Fang Wang and Qun Liu},
+  title     = {{TinyBERT}: Distilling {BERT} for Natural Language Understanding},
+  booktitle = {Findings of the Association for Computational Linguistics: EMNLP 2020},
+  pages     = {4163--4174},
+  year      = {2020},
+  doi       = {10.18653/v1/2020.findings-emnlp.372}
+}
+
+@inproceedings{sun2020mobilebert,
+  author    = {Zhiqing Sun and Hongkun Yu and Xiaodan Song and Renjie Liu and Yiming Yang and Denny Zhou},
+  title     = {{MobileBERT}: A Compact Task-Agnostic {BERT} for Resource-Limited Devices},
+  booktitle = {Proc. 58th Annual Meeting of the Association for Computational Linguistics (ACL)},
+  pages     = {2158--2170},
+  year      = {2020},
+  doi       = {10.18653/v1/2020.acl-main.195}
+}
+
+@inproceedings{geiping2023cramming,
+  author    = {Jonas Geiping and Tom Goldstein},
+  title     = {Cramming: Training a Language Model on a Single {GPU} in One Day},
+  booktitle = {Proc. 40th International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {202},
+  pages     = {11117--11143},
+  year      = {2023},
+  url       = {https://proceedings.mlr.press/v202/geiping23a.html}
+}
+
+@misc{eldan2023tinystories,
+  author       = {Ronen Eldan and Yuanzhi Li},
+  title        = {{TinyStories}: How Small Can Language Models Be and Still Speak Coherent {English}?},
+  howpublished = {arXiv preprint arXiv:2305.07759},
+  year         = {2023},
+  url          = {https://arxiv.org/abs/2305.07759}
+}
+
+% ---------------- Evaluation methodology ----------------
+@article{efron1979bootstrap,
+  author  = {Bradley Efron},
+  title   = {Bootstrap Methods: Another Look at the Jackknife},
+  journal = {The Annals of Statistics},
+  volume  = {7},
+  number  = {1},
+  pages   = {1--26},
+  year    = {1979},
+  doi     = {10.1214/aos/1176344552}
+}
+
+@inproceedings{koehn2004statistical,
+  author    = {Philipp Koehn},
+  title     = {Statistical Significance Tests for Machine Translation Evaluation},
+  booktitle = {Proc. 2004 Conf. Empirical Methods in Natural Language Processing (EMNLP)},
+  pages     = {388--395},
+  year      = {2004},
+  url       = {https://aclanthology.org/W04-3250/}
+}
+
+@inproceedings{dror2018hitchhiker,
+  author    = {Rotem Dror and Gili Baumer and Segev Shlomov and Roi Reichart},
+  title     = {The Hitchhiker's Guide to Testing Statistical Significance in Natural Language Processing},
+  booktitle = {Proc. 56th Annual Meeting of the Association for Computational Linguistics (ACL), Volume 1: Long Papers},
+  pages     = {1383--1392},
+  year      = {2018},
+  doi       = {10.18653/v1/P18-1128}
+}
+
+@inproceedings{vanmiltenburg2021preregistering,
+  author    = {Emiel van Miltenburg and Chris van der Lee and Emiel Krahmer},
+  title     = {Preregistering {NLP} Research},
+  booktitle = {Proc. 2021 Conf. North American Chapter of the Association for Computational Linguistics: Human Language Technologies (NAACL-HLT)},
+  pages     = {613--623},
+  year      = {2021},
+  doi       = {10.18653/v1/2021.naacl-main.51}
+}
+
+% ---------------- Customer support and complaints ----------------
+@inproceedings{xu2017new,
+  author    = {Anbang Xu and Zhe Liu and Yufan Guo and Vibha Sinha and Rama Akkiraju},
+  title     = {A New Chatbot for Customer Service on Social Media},
+  booktitle = {Proc. 2017 CHI Conference on Human Factors in Computing Systems},
+  pages     = {3506--3510},
+  year      = {2017},
+  doi       = {10.1145/3025453.3025496}
+}
+
+@inproceedings{hardalov2018towards,
+  author    = {Momchil Hardalov and Ivan Koychev and Preslav Nakov},
+  title     = {Towards Automated Customer Support},
+  booktitle = {Artificial Intelligence: Methodology, Systems, and Applications (AIMSA 2018)},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {11089},
+  pages     = {48--59},
+  publisher = {Springer},
+  year      = {2018},
+  doi       = {10.1007/978-3-319-99344-7_5}
+}
+
+@inproceedings{preotiucpietro2019automatically,
+  author    = {Daniel Preo{\c{t}}iuc-Pietro and Mihaela Gaman and Nikolaos Aletras},
+  title     = {Automatically Identifying Complaints in Social Media},
+  booktitle = {Proc. 57th Annual Meeting of the Association for Computational Linguistics (ACL)},
+  pages     = {5008--5019},
+  year      = {2019},
+  doi       = {10.18653/v1/P19-1495}
+}
+
+@inproceedings{jin2020complaint,
+  author    = {Mali Jin and Nikolaos Aletras},
+  title     = {Complaint Identification in Social Media with Transformer Networks},
+  booktitle = {Proc. 28th International Conference on Computational Linguistics (COLING)},
+  pages     = {1765--1771},
+  year      = {2020},
+  doi       = {10.18653/v1/2020.coling-main.157}
+}
+
+@article{oyewola2023consumer,
+  author  = {David Opeoluwa Oyewola and Temidayo Oluwatosin Omotehinwa and Emmanuel Gbenga Dada},
+  title   = {Consumer Complaints of Consumer Financial Protection Bureau via Two-Stage Residual One-Dimensional Convolutional Neural Network ({TSR1DCNN})},
+  journal = {Data and Information Management},
+  volume  = {7},
+  number  = {4},
+  pages   = {100046},
+  year    = {2023},
+  doi     = {10.1016/j.dim.2023.100046}
+}
+
+% ---------------- Datasets ----------------
+@misc{twcs2017dataset,
+  author       = {{Thought Vector}},
+  title        = {Customer Support on {Twitter}},
+  howpublished = {Kaggle dataset},
+  year         = {2017},
+  url          = {https://www.kaggle.com/datasets/thoughtvector/customer-support-on-twitter}
+}
+
+@misc{cfpbcomplaints,
+  author       = {{Consumer Financial Protection Bureau}},
+  title        = {Consumer Complaint Database},
+  howpublished = {Online database},
+  note         = {Accessed 2026},
+  url          = {https://www.consumerfinance.gov/data-research/consumer-complaints/}
+}

@@ -1,0 +1,119 @@
+[23:22:48] loading data
+[23:22:54] data: cat=500000 csat=15217 sent=341451 urg=932 dial=414234
+[23:22:54] step 0: backbone unfrozen
+[23:23:11] step 100 cat=0.909 csat=0.347 sent=0.306 urg=0.008 dial=2.755 | 0.169s/step | vram_peak=2.35GB
+[23:23:28] step 200 cat=1.016 csat=0.332 sent=0.337 urg=0.008 dial=2.749 | 0.170s/step | vram_peak=2.35GB
+[23:23:46] step 300 cat=0.894 csat=0.332 sent=0.283 urg=0.007 dial=2.755 | 0.173s/step | vram_peak=2.35GB
+[23:24:04] step 400 cat=0.931 csat=0.352 sent=0.304 urg=0.008 dial=2.772 | 0.175s/step | vram_peak=2.38GB
+[23:24:22] step 500 cat=0.952 csat=0.310 sent=0.300 urg=0.008 dial=2.773 | 0.176s/step | vram_peak=2.38GB
+[23:24:40] step 600 cat=0.837 csat=0.322 sent=0.285 urg=0.007 dial=2.773 | 0.176s/step | vram_peak=2.39GB
+[23:24:58] step 700 cat=0.829 csat=0.309 sent=0.310 urg=0.007 dial=2.775 | 0.177s/step | vram_peak=2.39GB
+[23:25:17] step 800 cat=0.899 csat=0.303 sent=0.275 urg=0.009 dial=2.794 | 0.178s/step | vram_peak=2.39GB
+[23:25:35] step 900 cat=0.858 csat=0.300 sent=0.328 urg=0.007 dial=2.789 | 0.179s/step | vram_peak=2.39GB
+[23:25:53] step 1000 cat=0.934 csat=0.336 sent=0.285 urg=0.007 dial=2.794 | 0.179s/step | vram_peak=2.39GB
+[23:26:06] EVAL step 1000: cat=0.7352 csatF1=0.3241 sentF1=0.7668 urgF1=0.2842 dial_loss=2.5393 score=1.8563
+[23:26:06]   new best -> model_best.pt
+[23:26:25] step 1100 cat=0.906 csat=0.304 sent=0.279 urg=0.008 dial=2.779 | 0.192s/step | vram_peak=2.39GB
+[23:26:44] step 1200 cat=0.911 csat=0.325 sent=0.279 urg=0.008 dial=2.764 | 0.191s/step | vram_peak=2.39GB
+[23:27:02] step 1300 cat=0.932 csat=0.332 sent=0.307 urg=0.008 dial=2.736 | 0.191s/step | vram_peak=2.39GB
+[23:27:20] step 1400 cat=0.857 csat=0.318 sent=0.296 urg=0.007 dial=2.762 | 0.190s/step | vram_peak=2.39GB
+[23:27:38] step 1500 cat=0.896 csat=0.317 sent=0.291 urg=0.006 dial=2.743 | 0.189s/step | vram_peak=2.39GB
+[23:27:57] step 1600 cat=1.042 csat=0.305 sent=0.301 urg=0.009 dial=2.767 | 0.189s/step | vram_peak=2.41GB
+[23:28:15] step 1700 cat=0.856 csat=0.338 sent=0.311 urg=0.007 dial=2.782 | 0.189s/step | vram_peak=2.41GB
+[23:28:33] step 1800 cat=0.877 csat=0.301 sent=0.317 urg=0.010 dial=2.777 | 0.188s/step | vram_peak=2.41GB
+[23:28:52] step 1900 cat=0.894 csat=0.344 sent=0.293 urg=0.006 dial=2.789 | 0.188s/step | vram_peak=2.41GB
+[23:29:10] step 2000 cat=0.892 csat=0.350 sent=0.301 urg=0.009 dial=2.809 | 0.188s/step | vram_peak=2.42GB
+[23:29:23] EVAL step 2000: cat=0.7367 csatF1=0.3320 sentF1=0.7627 urgF1=0.2838 dial_loss=2.5368 score=1.8615
+[23:29:23]   new best -> model_best.pt
+[23:29:41] step 2100 cat=0.883 csat=0.332 sent=0.303 urg=0.007 dial=2.805 | 0.194s/step | vram_peak=2.42GB
+[23:30:00] step 2200 cat=0.922 csat=0.332 sent=0.309 urg=0.008 dial=2.776 | 0.193s/step | vram_peak=2.42GB
+[23:30:18] step 2300 cat=0.950 csat=0.337 sent=0.291 urg=0.007 dial=2.804 | 0.193s/step | vram_peak=2.42GB
+[23:30:36] step 2400 cat=0.990 csat=0.345 sent=0.320 urg=0.005 dial=2.800 | 0.192s/step | vram_peak=2.45GB
+[23:30:54] step 2500 cat=0.954 csat=0.341 sent=0.325 urg=0.009 dial=2.779 | 0.192s/step | vram_peak=2.45GB
+[23:31:12] step 2600 cat=0.868 csat=0.292 sent=0.294 urg=0.007 dial=2.790 | 0.192s/step | vram_peak=2.45GB
+[23:31:30] step 2700 cat=1.003 csat=0.326 sent=0.293 urg=0.007 dial=2.780 | 0.191s/step | vram_peak=2.45GB
+[23:31:49] step 2800 cat=0.924 csat=0.352 sent=0.277 urg=0.007 dial=2.795 | 0.191s/step | vram_peak=2.45GB
+[23:32:07] step 2900 cat=0.955 csat=0.315 sent=0.294 urg=0.007 dial=2.779 | 0.190s/step | vram_peak=2.45GB
+[23:32:25] step 3000 cat=0.891 csat=0.299 sent=0.294 urg=0.007 dial=2.795 | 0.190s/step | vram_peak=2.45GB
+[23:32:38] EVAL step 3000: cat=0.7410 csatF1=0.3265 sentF1=0.7724 urgF1=0.2931 dial_loss=2.5329 score=1.8797
+[23:32:38]   new best -> model_best.pt
+[23:32:56] step 3100 cat=0.912 csat=0.320 sent=0.310 urg=0.008 dial=2.770 | 0.194s/step | vram_peak=2.45GB
+[23:33:15] step 3200 cat=0.880 csat=0.299 sent=0.287 urg=0.006 dial=2.757 | 0.194s/step | vram_peak=2.45GB
+[23:33:33] step 3300 cat=0.852 csat=0.337 sent=0.317 urg=0.006 dial=2.769 | 0.194s/step | vram_peak=2.45GB
+[23:33:51] step 3400 cat=0.859 csat=0.308 sent=0.298 urg=0.006 dial=2.760 | 0.193s/step | vram_peak=2.45GB
+[23:34:09] step 3500 cat=0.850 csat=0.328 sent=0.316 urg=0.008 dial=2.768 | 0.193s/step | vram_peak=2.45GB
+[23:34:27] step 3600 cat=0.928 csat=0.312 sent=0.298 urg=0.008 dial=2.762 | 0.193s/step | vram_peak=2.45GB
+[23:34:46] step 3700 cat=0.971 csat=0.349 sent=0.303 urg=0.006 dial=2.776 | 0.192s/step | vram_peak=2.45GB
+[23:35:04] step 3800 cat=0.932 csat=0.327 sent=0.292 urg=0.007 dial=2.773 | 0.192s/step | vram_peak=2.45GB
+[23:35:22] step 3900 cat=0.840 csat=0.285 sent=0.326 urg=0.009 dial=2.770 | 0.192s/step | vram_peak=2.45GB
+[23:35:40] step 4000 cat=0.909 csat=0.336 sent=0.335 urg=0.006 dial=2.778 | 0.191s/step | vram_peak=2.45GB
+[23:35:52] EVAL step 4000: cat=0.7389 csatF1=0.3174 sentF1=0.7675 urgF1=0.2995 dial_loss=2.5304 score=1.8702
+[23:36:11] step 4100 cat=0.871 csat=0.312 sent=0.298 urg=0.007 dial=2.757 | 0.194s/step | vram_peak=2.45GB
+[23:36:29] step 4200 cat=0.895 csat=0.340 sent=0.262 urg=0.007 dial=2.757 | 0.194s/step | vram_peak=2.45GB
+[23:36:47] step 4300 cat=0.873 csat=0.312 sent=0.310 urg=0.006 dial=2.765 | 0.194s/step | vram_peak=2.45GB
+[23:37:05] step 4400 cat=0.887 csat=0.312 sent=0.296 urg=0.008 dial=2.759 | 0.193s/step | vram_peak=2.45GB
+[23:37:23] step 4500 cat=0.922 csat=0.332 sent=0.313 urg=0.007 dial=2.801 | 0.193s/step | vram_peak=2.45GB
+[23:37:41] step 4600 cat=0.933 csat=0.357 sent=0.306 urg=0.006 dial=2.788 | 0.193s/step | vram_peak=2.45GB
+[23:37:59] step 4700 cat=1.021 csat=0.335 sent=0.289 urg=0.007 dial=2.725 | 0.193s/step | vram_peak=2.45GB
+[23:38:17] step 4800 cat=0.980 csat=0.294 sent=0.283 urg=0.007 dial=2.789 | 0.192s/step | vram_peak=2.45GB
+[23:38:35] step 4900 cat=1.080 csat=0.350 sent=0.323 urg=0.009 dial=2.793 | 0.192s/step | vram_peak=2.45GB
+[23:38:54] step 5000 cat=0.970 csat=0.309 sent=0.305 urg=0.006 dial=2.728 | 0.192s/step | vram_peak=2.45GB
+[23:39:07] EVAL step 5000: cat=0.7417 csatF1=0.3338 sentF1=0.7631 urgF1=0.3175 dial_loss=2.5288 score=1.9032
+[23:39:07]   new best -> model_best.pt
+[23:39:26] step 5100 cat=0.939 csat=0.298 sent=0.318 urg=0.006 dial=2.782 | 0.194s/step | vram_peak=2.45GB
+[23:39:44] step 5200 cat=0.922 csat=0.298 sent=0.301 urg=0.008 dial=2.739 | 0.194s/step | vram_peak=2.45GB
+[23:40:02] step 5300 cat=0.937 csat=0.317 sent=0.293 urg=0.006 dial=2.777 | 0.194s/step | vram_peak=2.45GB
+[23:40:20] step 5400 cat=0.924 csat=0.328 sent=0.321 urg=0.008 dial=2.762 | 0.194s/step | vram_peak=2.45GB
+[23:40:38] step 5500 cat=0.929 csat=0.327 sent=0.277 urg=0.006 dial=2.758 | 0.193s/step | vram_peak=2.45GB
+[23:40:56] step 5600 cat=0.889 csat=0.327 sent=0.326 urg=0.007 dial=2.821 | 0.193s/step | vram_peak=2.45GB
+[23:41:14] step 5700 cat=0.987 csat=0.333 sent=0.274 urg=0.006 dial=2.787 | 0.193s/step | vram_peak=2.45GB
+[23:41:32] step 5800 cat=0.892 csat=0.296 sent=0.296 urg=0.008 dial=2.765 | 0.193s/step | vram_peak=2.45GB
+[23:41:50] step 5900 cat=0.895 csat=0.304 sent=0.287 urg=0.007 dial=2.758 | 0.193s/step | vram_peak=2.45GB
+[23:42:08] step 6000 cat=0.904 csat=0.301 sent=0.337 urg=0.007 dial=2.764 | 0.192s/step | vram_peak=2.45GB
+[23:42:21] EVAL step 6000: cat=0.7424 csatF1=0.3167 sentF1=0.7647 urgF1=0.2959 dial_loss=2.5262 score=1.8671
+[23:42:39] step 6100 cat=1.082 csat=0.340 sent=0.308 urg=0.006 dial=2.752 | 0.194s/step | vram_peak=2.45GB
+[23:42:57] step 6200 cat=0.876 csat=0.314 sent=0.290 urg=0.006 dial=2.788 | 0.194s/step | vram_peak=2.45GB
+[23:43:15] step 6300 cat=0.907 csat=0.306 sent=0.313 urg=0.006 dial=2.743 | 0.194s/step | vram_peak=2.45GB
+[23:43:33] step 6400 cat=0.920 csat=0.319 sent=0.310 urg=0.008 dial=2.758 | 0.194s/step | vram_peak=2.45GB
+[23:43:52] step 6500 cat=0.852 csat=0.320 sent=0.315 urg=0.009 dial=2.823 | 0.193s/step | vram_peak=2.45GB
+[23:44:10] step 6600 cat=0.919 csat=0.303 sent=0.321 urg=0.006 dial=2.757 | 0.193s/step | vram_peak=2.45GB
+[23:44:28] step 6700 cat=0.954 csat=0.328 sent=0.291 urg=0.007 dial=2.775 | 0.193s/step | vram_peak=2.45GB
+[23:44:47] step 6800 cat=0.925 csat=0.313 sent=0.325 urg=0.008 dial=2.772 | 0.193s/step | vram_peak=2.45GB
+[23:45:04] step 6900 cat=0.899 csat=0.296 sent=0.293 urg=0.007 dial=2.763 | 0.193s/step | vram_peak=2.45GB
+[23:45:23] step 7000 cat=0.954 csat=0.342 sent=0.292 urg=0.007 dial=2.761 | 0.193s/step | vram_peak=2.45GB
+[23:45:36] EVAL step 7000: cat=0.7436 csatF1=0.3315 sentF1=0.7709 urgF1=0.3065 dial_loss=2.5234 score=1.9002
+[23:45:54] step 7100 cat=0.989 csat=0.305 sent=0.267 urg=0.006 dial=2.737 | 0.194s/step | vram_peak=2.45GB
+[23:46:11] step 7200 cat=0.915 csat=0.332 sent=0.291 urg=0.007 dial=2.756 | 0.194s/step | vram_peak=2.45GB
+[23:46:30] step 7300 cat=0.984 csat=0.326 sent=0.305 urg=0.007 dial=2.720 | 0.194s/step | vram_peak=2.45GB
+[23:46:48] step 7400 cat=0.883 csat=0.306 sent=0.293 urg=0.008 dial=2.777 | 0.194s/step | vram_peak=2.45GB
+[23:47:07] step 7500 cat=0.953 csat=0.307 sent=0.300 urg=0.008 dial=2.762 | 0.194s/step | vram_peak=2.45GB
+[23:47:25] step 7600 cat=0.924 csat=0.296 sent=0.279 urg=0.005 dial=2.811 | 0.193s/step | vram_peak=2.45GB
+[23:47:43] step 7700 cat=0.906 csat=0.324 sent=0.272 urg=0.007 dial=2.706 | 0.193s/step | vram_peak=2.45GB
+[23:48:01] step 7800 cat=0.963 csat=0.312 sent=0.311 urg=0.006 dial=2.754 | 0.193s/step | vram_peak=2.45GB
+[23:48:19] step 7900 cat=0.946 csat=0.341 sent=0.337 urg=0.007 dial=2.767 | 0.193s/step | vram_peak=2.45GB
+[23:48:38] step 8000 cat=0.942 csat=0.304 sent=0.331 urg=0.008 dial=2.763 | 0.193s/step | vram_peak=2.45GB
+[23:48:51] EVAL step 8000: cat=0.7439 csatF1=0.3332 sentF1=0.7706 urgF1=0.3133 dial_loss=2.5222 score=1.9087
+[23:48:51]   new best -> model_best.pt
+[23:49:09] step 8100 cat=0.944 csat=0.304 sent=0.311 urg=0.008 dial=2.745 | 0.194s/step | vram_peak=2.45GB
+[23:49:28] step 8200 cat=0.911 csat=0.335 sent=0.275 urg=0.007 dial=2.756 | 0.194s/step | vram_peak=2.45GB
+[23:49:46] step 8300 cat=0.958 csat=0.307 sent=0.324 urg=0.006 dial=2.772 | 0.194s/step | vram_peak=2.45GB
+[23:50:04] step 8400 cat=0.958 csat=0.321 sent=0.320 urg=0.006 dial=2.740 | 0.194s/step | vram_peak=2.45GB
+[23:50:22] step 8500 cat=0.916 csat=0.319 sent=0.295 urg=0.006 dial=2.770 | 0.194s/step | vram_peak=2.45GB
+[23:50:40] step 8600 cat=0.900 csat=0.311 sent=0.311 urg=0.006 dial=2.785 | 0.194s/step | vram_peak=2.45GB
+[23:50:59] step 8700 cat=0.968 csat=0.298 sent=0.309 urg=0.007 dial=2.784 | 0.194s/step | vram_peak=2.45GB
+[23:51:17] step 8800 cat=0.862 csat=0.298 sent=0.308 urg=0.007 dial=2.740 | 0.193s/step | vram_peak=2.45GB
+[23:51:35] step 8900 cat=0.888 csat=0.319 sent=0.300 urg=0.007 dial=2.745 | 0.193s/step | vram_peak=2.45GB
+[23:51:53] step 9000 cat=0.887 csat=0.333 sent=0.282 urg=0.006 dial=2.780 | 0.193s/step | vram_peak=2.45GB
+[23:52:06] EVAL step 9000: cat=0.7439 csatF1=0.3291 sentF1=0.7696 urgF1=0.3061 dial_loss=2.5218 score=1.8966
+[23:52:24] step 9100 cat=0.931 csat=0.295 sent=0.320 urg=0.006 dial=2.772 | 0.194s/step | vram_peak=2.45GB
+[23:52:42] step 9200 cat=0.971 csat=0.334 sent=0.305 urg=0.006 dial=2.714 | 0.194s/step | vram_peak=2.45GB
+[23:53:00] step 9300 cat=0.889 csat=0.319 sent=0.289 urg=0.006 dial=2.754 | 0.194s/step | vram_peak=2.45GB
+[23:53:18] step 9400 cat=0.927 csat=0.323 sent=0.324 urg=0.008 dial=2.733 | 0.194s/step | vram_peak=2.45GB
+[23:53:36] step 9500 cat=0.929 csat=0.315 sent=0.302 urg=0.008 dial=2.833 | 0.194s/step | vram_peak=2.45GB
+[23:53:54] step 9600 cat=0.905 csat=0.313 sent=0.329 urg=0.005 dial=2.741 | 0.194s/step | vram_peak=2.45GB
+[23:54:12] step 9700 cat=1.010 csat=0.279 sent=0.319 urg=0.006 dial=2.807 | 0.194s/step | vram_peak=2.45GB
+[23:54:30] step 9800 cat=0.985 csat=0.299 sent=0.356 urg=0.005 dial=2.770 | 0.193s/step | vram_peak=2.45GB
+[23:54:48] step 9900 cat=0.891 csat=0.294 sent=0.324 urg=0.006 dial=2.776 | 0.193s/step | vram_peak=2.45GB
+[23:55:07] step 10000 cat=1.032 csat=0.297 sent=0.309 urg=0.006 dial=2.747 | 0.193s/step | vram_peak=2.45GB
+[23:55:19] EVAL step 10000: cat=0.7433 csatF1=0.3291 sentF1=0.7717 urgF1=0.3032 dial_loss=2.5216 score=1.8952
+[23:55:20] finished at step 10000; best score 1.9087

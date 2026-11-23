@@ -1,0 +1,2 @@
+T5c criteria frozen 2026-11-08 22:50:11 before any T5c run
+c29f39c8087903ce9e7744eebe42c37d363c314d7daeec50b08e8e352d13320a *wsp_runs/t5/T5C_CRITERIA.md

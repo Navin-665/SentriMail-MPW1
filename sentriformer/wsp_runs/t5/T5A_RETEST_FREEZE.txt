@@ -1,0 +1,3 @@
+T5a replication criteria frozen 2026-11-09 00:15:59, before the replication ran
+5ce006fdef548bd1e280140a54e8e55fc2fec5727f36b16e29ccbf8b5034aa23 *wsp_runs/t5/T5A_RETEST_CRITERIA.md
+3a09717ee249f9ddfdb18cb71b84efb4da4fff07ab4b0ac8a5df3620c4b7124c *wsp_runs/t5/t5a_retest.py

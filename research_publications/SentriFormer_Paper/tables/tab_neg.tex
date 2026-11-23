@@ -1,0 +1,21 @@
+\begin{table}[t]
+\centering
+\caption{Interventions rejected under frozen criteria (validation only)}
+\label{tab:neg}
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}p{0.9cm}p{3.1cm}p{3.95cm}@{}}
+\toprule
+Exp. & Intervention & Outcome \\
+\midrule
+T1/T2 & class-weighted CE + label smoothing 0.1 & routing collapsed 64\%$\rightarrow$36\%; gate failed \\
+E2 & gradient-free class-prior bias & +1.6 pp acc but 8 key classes $-$2 pp \\
+P1 & scale 4 decoder FFN neurons & generic rate within 5 random controls \\
+P2 & add ``generic'' direction to LN bias & matched by random directions; action words 38.4$\rightarrow$30.4\% \\
+T5c & MMI rerank of 8 samples & random pick beat MMI; more broken links \\
+T6 & PMI$<$0 reply filter & PMI gain CI incl.\ 0; action $-$4.4 pp \\
+T7u & refit urgency projection & MAE 0.752 vs mean-predictor 0.671 \\
+\bottomrule
+\end{tabular}}
+\end{table}

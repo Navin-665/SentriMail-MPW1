@@ -1,0 +1,29 @@
+{
+ "rows_in": 414247,
+ "rows_kept": 384751,
+ "dropped": 29483,
+ "by_filter": {
+  "broken_link": 24610,
+  "generic_whole": 3475,
+  "privacy_secret": 22,
+  "privacy_bulk_contact": 1427
+ },
+ "detector": "t5_audit_v5.py",
+ "detector_sha256": "2a91746f9b35502bc957fe1ad7853854dd10ee6f0a986ecc03dd20f708baf8ca",
+ "leakage_audit": {
+  "kept_subset_of_t4d_train": true,
+  "group_id_overlap": 0,
+  "identical_pairs_found_and_dropped_from_train": {
+   "val": 3,
+   "test": 8
+  },
+  "rows_dropped_for_leakage": 13
+ },
+ "human_precision_audit": "NOT done (user override 2026-11-08)",
+ "kept_with_history": 99328,
+ "ctrl": {
+  "file": "t5a_ctrl_train.parquet",
+  "rows": 414234,
+  "dropped_leak_only": 13
+ }
+}

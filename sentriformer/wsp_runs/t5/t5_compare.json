@@ -1,0 +1,134 @@
+{
+ "rows": "500 fresh multi_val rows with history, rs=79",
+ "filters_human_validated": false,
+ "models": {
+  "T4d": {
+   "broken_link": 0.03,
+   "generic_whole": 0.168,
+   "generic_phrase": 0.268,
+   "privacy": 0.002,
+   "orphan": 0.01,
+   "portal": 0.01,
+   "eos": 1.0,
+   "repetition": 0.0,
+   "action": 0.414,
+   "specific": 0.2,
+   "mean_length": 20.784,
+   "empty": 0.0,
+   "rougeL_clean": 0.12754596187631176,
+   "distinct": 0.77,
+   "template_concentration": 0.308,
+   "dial_loss": 2.632335159266978
+  },
+  "T5a": {
+   "broken_link": 0.008,
+   "generic_whole": 0.078,
+   "generic_phrase": 0.172,
+   "privacy": 0.0,
+   "orphan": 0.006,
+   "portal": 0.006,
+   "eos": 1.0,
+   "repetition": 0.0,
+   "action": 0.392,
+   "specific": 0.218,
+   "mean_length": 20.688,
+   "empty": 0.0,
+   "rougeL_clean": 0.12625722958069388,
+   "distinct": 0.772,
+   "template_concentration": 0.308,
+   "dial_loss": 2.6397943220371407
+  },
+  "T5a_ctrl": {
+   "broken_link": 0.03,
+   "generic_whole": 0.162,
+   "generic_phrase": 0.284,
+   "privacy": 0.002,
+   "orphan": 0.01,
+   "portal": 0.012,
+   "eos": 1.0,
+   "repetition": 0.0,
+   "action": 0.41,
+   "specific": 0.226,
+   "mean_length": 20.498,
+   "empty": 0.0,
+   "rougeL_clean": 0.12929844006176705,
+   "distinct": 0.742,
+   "template_concentration": 0.32,
+   "dial_loss": 2.6225401646356885
+  }
+ },
+ "primary_broken_link_T5a_minus_ctrl_CI95": [
+  -0.022,
+  -0.038,
+  -0.008
+ ],
+ "secondary_CI95_T5a_minus_ctrl": {
+  "generic_whole": [
+   -0.084,
+   -0.114,
+   -0.056
+  ],
+  "generic_phrase": [
+   -0.112,
+   -0.152,
+   -0.074
+  ],
+  "privacy": [
+   -0.002,
+   -0.006,
+   0.0
+  ],
+  "orphan": [
+   -0.004,
+   -0.012,
+   0.004
+  ]
+ },
+ "secondary_CI95_T5a_minus_T4d": {
+  "broken_link": [
+   -0.022,
+   -0.036,
+   -0.008
+  ],
+  "generic_whole": [
+   -0.09,
+   -0.124,
+   -0.058
+  ],
+  "generic_phrase": [
+   -0.096,
+   -0.136,
+   -0.058
+  ],
+  "privacy": [
+   -0.002,
+   -0.006,
+   0.0
+  ],
+  "orphan": [
+   -0.004,
+   -0.012,
+   0.004
+  ]
+ },
+ "gates": {
+  "P1_broken_link_lower_than_ctrl": true,
+  "G1_cat_acc": true,
+  "G1_cat_macroF1": true,
+  "G1_csat_macroF1": true,
+  "G1_sent_macroF1": true,
+  "G2_portal": true,
+  "G2_eos": true,
+  "G2_repetition": true,
+  "G2_action": false,
+  "G2_specific": true,
+  "G2_distinct": true,
+  "G2_rouge": true,
+  "G2_length": true,
+  "G2_empty": true,
+  "G2_template": true,
+  "G3_dial_loss": true
+ },
+ "decision": "REJECT -> T4d stays default",
+ "examples": []
+}

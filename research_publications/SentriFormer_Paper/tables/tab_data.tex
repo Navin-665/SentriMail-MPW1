@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\caption{Supervised splits derived from SentriCorpus (rows)}
+\label{tab:data}
+\footnotesize
+\setlength{\tabcolsep}{3.2pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+Task & Train & Val & Test & Label source \\
+\midrule
+Pre-training text & 3{,}184{,}956 & 176{,}586 & 177{,}169 & span corruption \\
+Routing (33 cl.) & 2{,}219{,}168 & 122{,}961 & 123{,}229 & CFPB/e-com.\ product \\
+CSAT (1--5) & 15{,}217 & 849 & 870 & post-contact survey \\
+Sentiment (3 cl.) & 341{,}451 & 20{,}721 & 20{,}453 & teacher + human \\
+Urgency (0--3) & 932 & 200 & 202 & public annot.\ set \\
+Dialogue (multi-turn) & 479{,}445 & 28{,}454 & 28{,}907 & agent replies \\
+\quad T4d filtered & 414{,}247 & -- & -- & portal filter \\
+\quad T5a filtered & 384{,}751 & -- & -- & reply filter \\
+\bottomrule
+\end{tabular}}
+\end{table}

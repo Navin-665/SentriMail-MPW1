@@ -1,0 +1,23 @@
+\begin{table}[t]
+\centering
+\caption{Measured per-stage inference latency (ms; 30 messages $\times$ 2 repetitions; flan-T5 $\times$ 1)}
+\label{tab:lat}
+\footnotesize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{CPU (8 threads)} & \multicolumn{2}{c}{GPU (RTX 3060 6\,GB)} \\
+\cmidrule(lr){2-3}\cmidrule(l){4-5}
+Stage & median & p95 & median & p95 \\
+\midrule
+SentriFormer heads (route, sentiment, CSAT) & \textbf{30.4} & 33.9 & 59.4 & 65.7 \\
+SentriFormer heads + draft reply (greedy) & 275.2 & 501.8 & 586.0 & 898.1 \\
+DistilBERT-SST2 sentiment (fallback) & 41.9 & 51.7 & 19.6 & 23.4 \\
+DistilRoBERTa emotion & 37.8 & 51.9 & 20.8 & 24.7 \\
+flan-T5-small auto-reply (sampled) & 843.6 & 3095.9 & 1690.1 & 4345.1 \\
+SentriFormer checkpoint load & \multicolumn{2}{c}{720.7 (once)} & \multicolumn{2}{c}{1095.0 (once)} \\
+\midrule
+Full \texttt{analyze\_complaint()} (integrated) & -- & -- & 531.1 & 649.3 \\
+\bottomrule
+\end{tabular}}
+\end{table}

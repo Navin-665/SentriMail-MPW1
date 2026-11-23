@@ -1,0 +1,22 @@
+{
+ "e0": {
+  "checkpoints/classifier_best/tasks/category_len512": [
+   0.7914614254761461,
+   0.40353767547865954
+  ],
+  "checkpoints/multitask_best/tasks/category_len512": [
+   0.7399475772748297,
+   0.31677542427052624
+  ],
+  "checkpoints/m10_3_sft_best/tasks/category_len512": [
+   0.3958646097915263,
+   0.07767116165032345
+  ]
+ },
+ "e1": {
+  "tasks/category_len512": [
+   0.6374392391401374,
+   0.20539578213142032
+  ]
+ }
+}

@@ -1,0 +1,24 @@
+\begin{table}[t]
+\centering
+\caption{SentriMail implementation stack}
+\label{tab:stack}
+\footnotesize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}ll@{}}
+\toprule
+Layer & Technology (as implemented) \\
+\midrule
+Web backend & FastAPI 0.111 on uvicorn, 22 HTTP endpoints \\
+Views & Jinja2 templates, Chart.js dashboards \\
+Storage & MongoDB (pymongo 4.8): users, complaints, replies, login logs \\
+Sessions / roles & HTTP-only cookie sessions; roles \texttt{user}, \texttt{admin} \\
+Intake & web form, browser speech-to-text, Whisper (base) audio upload \\
+Language & langdetect + machine translation (11 UI languages) \\
+Models & SentriFormer (routing, sentiment, CSAT, draft reply); \\
+ & DistilRoBERTa emotion; DistilBERT-SST2 / flan-T5-small fallbacks \\
+Scheduling & APScheduler hourly time-based escalation \\
+Notification & SMTP e-mail (outbound) \\
+Deployment & Procfile, Python 3.11, PORT env var \\
+\bottomrule
+\end{tabular}}
+\end{table}

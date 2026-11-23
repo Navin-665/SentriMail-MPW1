@@ -1,0 +1,24 @@
+{
+ "ckpt": "wsp_runs/train/T4d/model_best.pt",
+ "fmt": "multi",
+ "loss_all_val": 2.500070520433299,
+ "loss_rows_with_history": 2.7174242072588304,
+ "n_val": 28454,
+ "n_with_history": 7294,
+ "generation_300_with_history": {
+  "portal_loop_rate": 0.0033333333333333335,
+  "redirect_any_rate": 0.01,
+  "orphan_rate": 0.006666666666666667,
+  "eos_rate": 1.0,
+  "repetition_rate": 0.0,
+  "rougeL": 0.12445455573344356,
+  "distinct_2": 0.2229957332135639,
+  "mean_words": 15.843333333333334,
+  "reference_portal_loop_rate": 0.15
+ },
+ "context_correctness": {
+  "n": 229,
+  "reask_rate": 0.013100436681222707,
+  "ack_proxy_rate": 0.25327510917030566
+ }
+}

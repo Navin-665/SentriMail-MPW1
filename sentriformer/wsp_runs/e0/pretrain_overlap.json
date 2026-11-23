@@ -1,0 +1,38 @@
+{
+  "classification_train": {
+    "n": 2219168,
+    "in_pretrain_train": 2219168,
+    "in_pretrain_val": 0,
+    "in_pretrain_test": 0
+  },
+  "classification_val": {
+    "n": 122961,
+    "in_pretrain_train": 0,
+    "in_pretrain_val": 122961,
+    "in_pretrain_test": 0
+  },
+  "classification_test": {
+    "n": 123229,
+    "in_pretrain_train": 0,
+    "in_pretrain_val": 0,
+    "in_pretrain_test": 123229
+  },
+  "csat_train": {
+    "n": 15217,
+    "in_pretrain_train": 15217,
+    "in_pretrain_val": 0,
+    "in_pretrain_test": 0
+  },
+  "csat_val": {
+    "n": 849,
+    "in_pretrain_train": 0,
+    "in_pretrain_val": 849,
+    "in_pretrain_test": 0
+  },
+  "csat_test": {
+    "n": 870,
+    "in_pretrain_train": 0,
+    "in_pretrain_val": 0,
+    "in_pretrain_test": 870
+  }
+}

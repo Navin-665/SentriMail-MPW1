@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\caption{Integrated pipeline decisions on the 30-message benchmark}
+\label{tab:pipe}
+\footnotesize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lr@{}}
+\toprule
+Quantity & Value \\
+\midrule
+Messages with SentriFormer output attached & 30 / 30 \\
+Final priority: CRITICAL / HIGH / MEDIUM / LOW & 2 / 16 / 10 / 2 \\
+Auto-replied (LOW) & 2 (both thank-you messages) \\
+Auto-replied while containing a hard-blocker term & 0 \\
+Routing flagged for manual triage (conf.\ $<$0.25) & 5 / 30 \\
+Draft replies with a safety flag raised & 0 / 30 \\
+Sentiment: negative / positive & 28 / 2 \\
+Predicted CSAT stars 1/2/3/4/5 & 6 / 5 / 7 / 3 / 9 \\
+First call incl.\ model loading & 43.2\,s \\
+\bottomrule
+\end{tabular}}
+\end{table}

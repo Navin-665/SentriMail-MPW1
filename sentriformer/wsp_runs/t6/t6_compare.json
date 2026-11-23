@@ -1,0 +1,137 @@
+{
+ "rows": "500 fresh multi_val rows with history, rs=131",
+ "filters_human_validated": false,
+ "models": {
+  "T5a": {
+   "broken_link": 0.004,
+   "generic_whole": 0.07,
+   "generic_phrase": 0.18,
+   "privacy": 0.0,
+   "orphan": 0.006,
+   "portal": 0.004,
+   "eos": 1.0,
+   "repetition": 0.0,
+   "action": 0.398,
+   "specific": 0.228,
+   "mean_length": 20.99,
+   "empty": 0.0,
+   "rougeL_clean": 0.12106317056590489,
+   "distinct": 0.752,
+   "template_concentration": 0.278,
+   "dial_loss": 2.777531202374158,
+   "judge_pmi": 0.3339219349622726
+  },
+  "T6": {
+   "broken_link": 0.002,
+   "generic_whole": 0.09,
+   "generic_phrase": 0.15,
+   "privacy": 0.0,
+   "orphan": 0.004,
+   "portal": 0.006,
+   "eos": 1.0,
+   "repetition": 0.0,
+   "action": 0.354,
+   "specific": 0.254,
+   "mean_length": 20.872,
+   "empty": 0.0,
+   "rougeL_clean": 0.12536358617666177,
+   "distinct": 0.784,
+   "template_concentration": 0.302,
+   "dial_loss": 2.769375048581782,
+   "judge_pmi": 0.3424047490358353
+  },
+  "T6_ctrl": {
+   "broken_link": 0.004,
+   "generic_whole": 0.058,
+   "generic_phrase": 0.14,
+   "privacy": 0.0,
+   "orphan": 0.008,
+   "portal": 0.006,
+   "eos": 1.0,
+   "repetition": 0.0,
+   "action": 0.398,
+   "specific": 0.246,
+   "mean_length": 20.856,
+   "empty": 0.0,
+   "rougeL_clean": 0.125359010335004,
+   "distinct": 0.772,
+   "template_concentration": 0.3,
+   "dial_loss": 2.763654590228464,
+   "judge_pmi": 0.3389861149191856
+  }
+ },
+ "rows_without_partner": 0,
+ "primary_judge_pmi_T6_minus_ctrl_CI95": [
+  0.0034186341166496277,
+  -0.011878033205866811,
+  0.01882065118253231
+ ],
+ "judge_pmi_T6_minus_T5a_CI95": [
+  0.008482814073562621,
+  -0.008335373814404011,
+  0.02595040269345044
+ ],
+ "secondary_CI95": {
+  "specific_T6_minus_T6_ctrl": [
+   0.008,
+   -0.024,
+   0.04
+  ],
+  "specific_T6_minus_T5a": [
+   0.026,
+   -0.008,
+   0.06
+  ],
+  "generic_phrase_T6_minus_T6_ctrl": [
+   0.01,
+   -0.016,
+   0.036
+  ],
+  "generic_phrase_T6_minus_T5a": [
+   -0.03,
+   -0.064,
+   0.004
+  ],
+  "generic_whole_T6_minus_T6_ctrl": [
+   0.032,
+   0.01,
+   0.054
+  ],
+  "generic_whole_T6_minus_T5a": [
+   0.02,
+   -0.006,
+   0.04404999999999927
+  ],
+  "broken_link_T6_minus_T6_ctrl": [
+   -0.002,
+   -0.006,
+   0.0
+  ],
+  "broken_link_T6_minus_T5a": [
+   -0.002,
+   -0.006,
+   0.0
+  ]
+ },
+ "gates": {
+  "P1_judge_pmi_above_ctrl": false,
+  "G1_cat_acc": true,
+  "G1_cat_macroF1": true,
+  "G1_csat_macroF1": true,
+  "G1_sent_macroF1": true,
+  "G2_portal": true,
+  "G2_eos": true,
+  "G2_repetition": true,
+  "G2_action": false,
+  "G2_specific": true,
+  "G2_distinct": true,
+  "G2_rouge": true,
+  "G2_length": true,
+  "G2_empty": true,
+  "G2_template": false,
+  "G2_generic": true,
+  "G2_broken": true,
+  "G3_dial_loss": true
+ },
+ "decision": "REJECT -> T5a stays default"
+}

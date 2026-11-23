@@ -1,0 +1,21 @@
+{
+ "rows_in": 384751,
+ "rows_kept": 320599,
+ "dropped_pmi_lt_0": 64152,
+ "no_partner_kept": 1166,
+ "scores_sha256": "6cbd98533623d66abad4c04e6f0a4f77dfd81c22f521fb613fa6d7162866ac64",
+ "dropped_by_company_top10": {
+  "AmazonHelp": 4039,
+  "AppleSupport": 3412,
+  "AmericanAir": 3007,
+  "SpotifyCares": 2731,
+  "Delta": 2271,
+  "SouthwestAir": 2168,
+  "hulu_support": 2026,
+  "Tesco": 1946,
+  "GWRHelp": 1936,
+  "VirginTrains": 1811
+ },
+ "leakage": "subset of t5a_train (audited)",
+ "human_precision_audit": "NOT done"
+}

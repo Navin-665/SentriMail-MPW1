@@ -1,0 +1,92 @@
+{
+  "timestamp": "2026-09-10 12:58:21",
+  "overall_pass": true,
+  "gates": {
+    "train": {
+      "total": 530388,
+      "gate1_contamination_pct": 0.0,
+      "gate1_pass": true,
+      "gate1_types": {
+        "handle": 0,
+        "url": 0,
+        "signature": 0,
+        "dm": 0,
+        "phone": 0
+      },
+      "gate2_empty_ctx": 0,
+      "gate2_empty_resp": 0,
+      "gate2_pass": true,
+      "gate3_orphan_count": 619,
+      "gate3_orphan_pct": 0.1167,
+      "gate3_pass": true,
+      "gate4_eos_pct": 0.0,
+      "gate4_sample_size": 5000,
+      "gate4_pass": true,
+      "gate5_mean_tokens": 91.7,
+      "gate5_median_tokens": 92.0,
+      "gate5_p5": 40.0,
+      "gate5_p95": 138.0,
+      "gate5_min": 13,
+      "gate5_max": 181,
+      "gate5_pass": "True"
+    },
+    "val": {
+      "total": 31470,
+      "gate1_contamination_pct": 0.0,
+      "gate1_pass": true,
+      "gate1_types": {
+        "handle": 0,
+        "url": 0,
+        "signature": 0,
+        "dm": 0,
+        "phone": 0
+      },
+      "gate2_empty_ctx": 0,
+      "gate2_empty_resp": 0,
+      "gate2_pass": true,
+      "gate3_orphan_count": 50,
+      "gate3_orphan_pct": 0.1589,
+      "gate3_pass": true,
+      "gate4_eos_pct": 0.0,
+      "gate4_sample_size": 5000,
+      "gate4_pass": true,
+      "gate5_mean_tokens": 31.7,
+      "gate5_median_tokens": 25.0,
+      "gate5_p5": 13.0,
+      "gate5_p95": 91.0,
+      "gate5_min": 8,
+      "gate5_max": 182,
+      "gate5_pass": "True"
+    },
+    "test": {
+      "total": 31912,
+      "gate1_contamination_pct": 0.0,
+      "gate1_pass": true,
+      "gate1_types": {
+        "handle": 0,
+        "url": 0,
+        "signature": 0,
+        "dm": 0,
+        "phone": 0
+      },
+      "gate2_empty_ctx": 0,
+      "gate2_empty_resp": 0,
+      "gate2_pass": true,
+      "gate3_orphan_count": 39,
+      "gate3_orphan_pct": 0.1222,
+      "gate3_pass": true,
+      "gate4_eos_pct": 0.0,
+      "gate4_sample_size": 5000,
+      "gate4_pass": true,
+      "gate5_mean_tokens": 32.0,
+      "gate5_median_tokens": 25.0,
+      "gate5_p5": 13.0,
+      "gate5_p95": 89.0,
+      "gate5_min": 8,
+      "gate5_max": 346,
+      "gate5_pass": "True"
+    },
+    "gate6_manual_inspection": "DISPLAYED",
+    "gate6_pass": true
+  }
+}

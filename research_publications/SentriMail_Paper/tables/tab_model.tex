@@ -1,0 +1,21 @@
+\begin{table}[t]
+\centering
+\caption{Offline quality of the SentriFormer signals consumed by SentriMail (held-out corpus splits, reported in the companion model study)}
+\label{tab:model}
+\footnotesize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}llr@{}}
+\toprule
+Signal used by SentriMail & Metric & Value \\
+\midrule
+Routing (33 classes, $n$=123{,}229, test) & accuracy / weighted-F1 & 73.7\% / 0.737 \\
+ & majority baseline & 27.2\% \\
+ & low-confidence ($<$0.25) rate & 0.5\% \\
+Sentiment (3 classes, $n$=20{,}453, test) & accuracy / macro-F1 & 88.1\% / 0.758 \\
+CSAT (1--5 stars, $n$=870, test) & exact / within-1 star & 72.4\% / 82.0\% \\
+Draft reply (500 val.\ contexts, deployed) & broken-link / generic phrase & 0.4\% / 16.6\% \\
+ & portal-loop & 1.0\% \\
+Urgency & -- & not used (unvalidated) \\
+\bottomrule
+\end{tabular}}
+\end{table}

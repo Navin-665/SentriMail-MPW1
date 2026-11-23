@@ -1,0 +1,93 @@
+{
+ "rows": 500,
+ "random_state": 113,
+ "models": {
+  "T4d": {
+   "broken_link": 0.058,
+   "generic_whole": 0.148,
+   "generic_phrase": 0.258,
+   "privacy": 0.004,
+   "orphan": 0.012,
+   "portal": 0.018,
+   "eos": 1.0,
+   "repetition": 0.0,
+   "action": 0.396,
+   "specific": 0.22,
+   "mean_length": 21.194,
+   "empty": 0.0,
+   "rougeL_clean": 0.13078704899441507,
+   "distinct": 0.778,
+   "template_concentration": 0.304,
+   "dial_loss": 2.691597060542165
+  },
+  "T5a": {
+   "broken_link": 0.004,
+   "generic_whole": 0.074,
+   "generic_phrase": 0.166,
+   "privacy": 0.0,
+   "orphan": 0.004,
+   "portal": 0.01,
+   "eos": 1.0,
+   "repetition": 0.0,
+   "action": 0.402,
+   "specific": 0.228,
+   "mean_length": 20.956,
+   "empty": 0.0,
+   "rougeL_clean": 0.13471086681427089,
+   "distinct": 0.78,
+   "template_concentration": 0.316,
+   "dial_loss": 2.703278933001152
+  },
+  "T5a_ctrl": {
+   "broken_link": 0.048,
+   "generic_whole": 0.17,
+   "generic_phrase": 0.298,
+   "privacy": 0.0,
+   "orphan": 0.01,
+   "portal": 0.014,
+   "eos": 1.0,
+   "repetition": 0.0,
+   "action": 0.388,
+   "specific": 0.226,
+   "mean_length": 20.746,
+   "empty": 0.0,
+   "rougeL_clean": 0.13760159203442915,
+   "distinct": 0.762,
+   "template_concentration": 0.316,
+   "dial_loss": 2.6820316101286097
+  }
+ },
+ "P1_broken_link_T5a_minus_ctrl_CI95": [
+  -0.044,
+  -0.062,
+  -0.026
+ ],
+ "generic_phrase_T5a_minus_T4d_CI95": [
+  -0.092,
+  -0.126,
+  -0.058
+ ],
+ "action_T5a_minus_T4d_CI95": [
+  0.006,
+  -0.024,
+  0.036
+ ],
+ "gates": {
+  "P1_replication": true,
+  "P1_original": true,
+  "G2_portal": true,
+  "G2_eos": true,
+  "G2_repetition": true,
+  "G2_action": true,
+  "G2_specific": true,
+  "G2_distinct": true,
+  "G2_rouge": true,
+  "G2_length": true,
+  "G2_empty": true,
+  "G2_template": true,
+  "G3_dial_loss": true,
+  "G1_eval_full_val": true
+ },
+ "decision": "PASS -> T5a deployed as default",
+ "final_checkpoint_sha256": "4205c569b1d175ed3378a4867c5406954ffe5f408edf696b7d0aad9016ea38f5"
+}

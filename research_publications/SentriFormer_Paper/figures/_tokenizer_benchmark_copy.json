@@ -1,0 +1,185 @@
+{
+ "16k": {
+  "vocab_size": 16000,
+  "per_source": {
+   "cfpb": {
+    "samples_evaluated": 5000,
+    "total_tokens": 1404860,
+    "avg_tokens_per_text": 280.97,
+    "avg_tokens_per_word": 1.19,
+    "chars_per_token": 5.0,
+    "compression_ratio": 5.0,
+    "unk_rate_pct": 0.0
+   },
+   "twcs": {
+    "samples_evaluated": 5000,
+    "total_tokens": 313293,
+    "avg_tokens_per_text": 32.32,
+    "avg_tokens_per_word": 1.66,
+    "chars_per_token": 3.53,
+    "compression_ratio": 3.53,
+    "unk_rate_pct": 0.0
+   },
+   "customer_support": {
+    "samples_evaluated": 849,
+    "total_tokens": 13241,
+    "avg_tokens_per_text": 15.6,
+    "avg_tokens_per_word": 1.28,
+    "chars_per_token": 4.52,
+    "compression_ratio": 4.52,
+    "unk_rate_pct": 0.0
+   },
+   "bitext": {
+    "samples_evaluated": 1187,
+    "total_tokens": 167171,
+    "avg_tokens_per_text": 70.42,
+    "avg_tokens_per_word": 1.24,
+    "chars_per_token": 4.83,
+    "compression_ratio": 4.83,
+    "unk_rate_pct": 0.0
+   }
+  },
+  "overall": {
+   "total_tokens_evaluated": 1898565,
+   "avg_tokens_per_text": 105.97,
+   "median_tokens_per_text": 37.0,
+   "avg_tokens_per_word": 1.26,
+   "chars_per_token": 4.73,
+   "compression_ratio": 4.73,
+   "unk_rate_pct": 0.0
+  },
+  "context_coverage": {
+   "256_tokens": 88.52,
+   "384_tokens": 94.13,
+   "512_tokens": 96.73,
+   "768_tokens": 98.83
+  },
+  "embedding_param_cost": {
+   "d_model_256": "4.10M params (4,096,000 weights)",
+   "d_model_384": "6.14M params (6,144,000 weights)",
+   "d_model_512": "8.19M params (8,192,000 weights)"
+  }
+ },
+ "24k": {
+  "vocab_size": 24000,
+  "per_source": {
+   "cfpb": {
+    "samples_evaluated": 5000,
+    "total_tokens": 1388100,
+    "avg_tokens_per_text": 277.62,
+    "avg_tokens_per_word": 1.18,
+    "chars_per_token": 5.06,
+    "compression_ratio": 5.06,
+    "unk_rate_pct": 0.0
+   },
+   "twcs": {
+    "samples_evaluated": 5000,
+    "total_tokens": 299763,
+    "avg_tokens_per_text": 30.93,
+    "avg_tokens_per_word": 1.59,
+    "chars_per_token": 3.69,
+    "compression_ratio": 3.69,
+    "unk_rate_pct": 0.0
+   },
+   "customer_support": {
+    "samples_evaluated": 849,
+    "total_tokens": 12745,
+    "avg_tokens_per_text": 15.01,
+    "avg_tokens_per_word": 1.23,
+    "chars_per_token": 4.7,
+    "compression_ratio": 4.7,
+    "unk_rate_pct": 0.0
+   },
+   "bitext": {
+    "samples_evaluated": 1187,
+    "total_tokens": 163352,
+    "avg_tokens_per_text": 68.81,
+    "avg_tokens_per_word": 1.21,
+    "chars_per_token": 4.94,
+    "compression_ratio": 4.94,
+    "unk_rate_pct": 0.0
+   }
+  },
+  "overall": {
+   "total_tokens_evaluated": 1863960,
+   "avg_tokens_per_text": 104.04,
+   "median_tokens_per_text": 35.0,
+   "avg_tokens_per_word": 1.23,
+   "chars_per_token": 4.82,
+   "compression_ratio": 4.82,
+   "unk_rate_pct": 0.0
+  },
+  "context_coverage": {
+   "256_tokens": 88.65,
+   "384_tokens": 94.32,
+   "512_tokens": 96.86,
+   "768_tokens": 98.87
+  },
+  "embedding_param_cost": {
+   "d_model_256": "6.14M params (6,144,000 weights)",
+   "d_model_384": "9.22M params (9,216,000 weights)",
+   "d_model_512": "12.29M params (12,288,000 weights)"
+  }
+ },
+ "32k": {
+  "vocab_size": 32000,
+  "per_source": {
+   "cfpb": {
+    "samples_evaluated": 5000,
+    "total_tokens": 1381034,
+    "avg_tokens_per_text": 276.21,
+    "avg_tokens_per_word": 1.17,
+    "chars_per_token": 5.08,
+    "compression_ratio": 5.08,
+    "unk_rate_pct": 0.0
+   },
+   "twcs": {
+    "samples_evaluated": 5000,
+    "total_tokens": 291998,
+    "avg_tokens_per_text": 30.12,
+    "avg_tokens_per_word": 1.55,
+    "chars_per_token": 3.78,
+    "compression_ratio": 3.78,
+    "unk_rate_pct": 0.0
+   },
+   "customer_support": {
+    "samples_evaluated": 849,
+    "total_tokens": 12534,
+    "avg_tokens_per_text": 14.76,
+    "avg_tokens_per_word": 1.21,
+    "chars_per_token": 4.78,
+    "compression_ratio": 4.78,
+    "unk_rate_pct": 0.0
+   },
+   "bitext": {
+    "samples_evaluated": 1187,
+    "total_tokens": 162149,
+    "avg_tokens_per_text": 68.3,
+    "avg_tokens_per_word": 1.2,
+    "chars_per_token": 4.97,
+    "compression_ratio": 4.97,
+    "unk_rate_pct": 0.0
+   }
+  },
+  "overall": {
+   "total_tokens_evaluated": 1847715,
+   "avg_tokens_per_text": 103.13,
+   "median_tokens_per_text": 35.0,
+   "avg_tokens_per_word": 1.22,
+   "chars_per_token": 4.87,
+   "compression_ratio": 4.87,
+   "unk_rate_pct": 0.0
+  },
+  "context_coverage": {
+   "256_tokens": 88.72,
+   "384_tokens": 94.37,
+   "512_tokens": 96.91,
+   "768_tokens": 98.89
+  },
+  "embedding_param_cost": {
+   "d_model_256": "8.19M params (8,192,000 weights)",
+   "d_model_384": "12.29M params (12,288,000 weights)",
+   "d_model_512": "16.38M params (16,384,000 weights)"
+  }
+ }
+}

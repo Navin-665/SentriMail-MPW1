@@ -1,0 +1,3 @@
+P2 criteria frozen 2026-11-08 18:39:52 (approved revision 4; editorial hypothesis wording applied before freeze)
+68c91bf1e8cb9b48836e03ba56a4365272dbba703884ceca823c7b21d2847819 *P2_CRITERIA.md
+06885349addc53913f38ab7d82a9760cbc858201f0790792bc36ca0d637cc0fa *WSP_P2_DESIGN.md

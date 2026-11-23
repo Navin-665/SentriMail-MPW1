@@ -1,0 +1,95 @@
+{
+  "ctx_tok_budget": 250,
+  "train": {
+    "rows_m10_4": 531888,
+    "rows_kept": 479445,
+    "dropped_customer_authored_target": 52424,
+    "target_role": {
+      "agent": 461773,
+      "customer_self": 30438,
+      "customer_other": 21986,
+      "non_twcs": 17277,
+      "unmatched": 414
+    },
+    "match_exact": 494254,
+    "match_jaccard": 19943,
+    "unmatched": 414,
+    "left_truncated": 6434,
+    "leak_dropped_exact_match(template repeated earlier)": 65,
+    "leak_dropped_fuzzy_match(possible wrong turn)": 2,
+    "kept_with_history": 123737,
+    "history_segments_mean(kept, twcs w/ history)": 3.011492116343535,
+    "multi_ctx_tokens_p50_p95": [
+      32,
+      145
+    ],
+    "t4d_flags_in_kept": {
+      "portal_rewrite": 41835,
+      "dm_redirect": 3413,
+      "empty_target": 0
+    }
+  },
+  "val": {
+    "rows_m10_4": 31470,
+    "rows_kept": 28454,
+    "dropped_customer_authored_target": 3015,
+    "target_role": {
+      "agent": 27567,
+      "customer_self": 1772,
+      "customer_other": 1243,
+      "non_twcs": 856,
+      "unmatched": 32
+    },
+    "match_jaccard": 1275,
+    "match_exact": 29307,
+    "unmatched": 32,
+    "left_truncated": 441,
+    "leak_dropped_exact_match(template repeated earlier)": 4,
+    "leak_dropped_fuzzy_match(possible wrong turn)": 0,
+    "kept_with_history": 7294,
+    "history_segments_mean(kept, twcs w/ history)": 2.9817658349328213,
+    "multi_ctx_tokens_p50_p95": [
+      31,
+      138
+    ],
+    "t4d_flags_in_kept": {
+      "portal_rewrite": 2612,
+      "dm_redirect": 313,
+      "empty_target": 0
+    }
+  },
+  "test": {
+    "rows_m10_4": 31912,
+    "rows_kept": 28907,
+    "dropped_customer_authored_target": 3005,
+    "target_role": {
+      "agent": 27994,
+      "customer_self": 1747,
+      "customer_other": 1258,
+      "non_twcs": 886,
+      "unmatched": 27
+    },
+    "match_exact": 29798,
+    "match_jaccard": 1201,
+    "unmatched": 27,
+    "left_truncated": 388,
+    "leak_dropped_exact_match(template repeated earlier)": 2,
+    "leak_dropped_fuzzy_match(possible wrong turn)": 0,
+    "kept_with_history": 7246,
+    "history_segments_mean(kept, twcs w/ history)": 2.987027325420922,
+    "multi_ctx_tokens_p50_p95": [
+      31,
+      139
+    ],
+    "t4d_flags_in_kept": {
+      "portal_rewrite": 2578,
+      "dm_redirect": 354,
+      "empty_target": 0
+    }
+  },
+  "group_overlap": {
+    "train&val": 0,
+    "train&test": 0,
+    "val&test": 0
+  }
+}

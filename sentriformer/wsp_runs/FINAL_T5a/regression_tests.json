@@ -1,0 +1,52 @@
+{
+  "T1_strict_load": {
+    "pass": true,
+    "detail": {
+      "tensors": 123
+    }
+  },
+  "T3b_generation_deterministic": {
+    "pass": true,
+    "detail": {
+      "deterministic": "20/20"
+    }
+  },
+  "T4_robust_inputs": {
+    "pass": true,
+    "detail": {
+      "long_781_tokens": {
+        "category": "Credit card or prepaid card",
+        "truncated": true,
+        "response_len": 66
+      },
+      "empty": {
+        "category": "Credit reporting, credit repair services, or other personal consumer reports",
+        "truncated": false,
+        "response_len": 74
+      },
+      "unicode": {
+        "category": "Order Related",
+        "truncated": false,
+        "response_len": 87
+      }
+    }
+  },
+  "T5_originals_untouched": {
+    "pass": true,
+    "detail": {
+      "checked": [
+        "checkpoints/classification/classifier_best.pt",
+        "checkpoints/multitask/multitask_best.pt",
+        "checkpoints/m10_3_sft/m10_3_sft_best.pt",
+        "checkpoints/config.json"
+      ]
+    }
+  },
+  "T6_reproduces_recorded_val_predictions": {
+    "pass": true,
+    "detail": {
+      "agreement": "1998/2000"
+    }
+  },
+  "all_pass": true
+}

@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\caption{Optimisation settings}
+\label{tab:hp}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lp{5.6cm}@{}}
+\toprule
+Stage & Setting \\
+\midrule
+Pre-training & AdamW, lr $5\!\times\!10^{-4}$, $\beta$=(0.9, 0.98), wd 0.01, cosine, 2k warm-up, batch 64, 149{,}200 steps (3 epochs), fp16, clip 1.0, 14.79 h \\
+Phase T (T3) & AdamW; backbone lr $3\!\times\!10^{-5}$, heads $10^{-3}$; 2k-step frozen-backbone head warm-up; 18k steps; batches: routing 48, sentiment 32, dialogue 32, CSAT 16 (every 3rd step), urgency 8 (every 4th); 70.3 min, peak 2.23 GB VRAM \\
+T4a--T6 & as T3, heads lr $3\!\times\!10^{-4}$, no head warm-up, dialogue context 256 tokens, 10k--18k steps \\
+Selection & every 1k steps: $\text{acc}_{\text{route}}+\text{mF1}_{\text{csat}}+\text{mF1}_{\text{sent}}+\text{mF1}_{\text{urg}}-0.1\,\mathcal{L}_{\text{dial}}$ \\
+Decoding & greedy, repetition penalty 1.2, $\le$100 new tokens \\
+\bottomrule
+\end{tabular}}
+\end{table}

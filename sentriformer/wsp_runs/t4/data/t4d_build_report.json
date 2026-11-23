@@ -1,0 +1,139 @@
+{
+ "rows_in": 479445,
+ "rows_kept": 414247,
+ "dropped": 65198,
+ "by_reason": {
+  "portal_rewrite": 41835,
+  "dm_redirect": 3413,
+  "empty_target": 0,
+  "target_portal_loop": 56974
+ },
+ "by_intent_category": {
+  "general": {
+   "rows": 344136,
+   "dropped": 37808,
+   "frac": 0.11
+  },
+  "delivery": {
+   "rows": 32283,
+   "dropped": 10913,
+   "frac": 0.338
+  },
+  "account": {
+   "rows": 32275,
+   "dropped": 5001,
+   "frac": 0.155
+  },
+  "billing": {
+   "rows": 20256,
+   "dropped": 3668,
+   "frac": 0.181
+  },
+  "order_delay": {
+   "rows": 13690,
+   "dropped": 1070,
+   "frac": 0.078
+  },
+  "refund": {
+   "rows": 12530,
+   "dropped": 3059,
+   "frac": 0.244
+  },
+  "feedback": {
+   "rows": 11949,
+   "dropped": 1602,
+   "frac": 0.134
+  },
+  "cancellation": {
+   "rows": 8733,
+   "dropped": 1354,
+   "frac": 0.155
+  },
+  "login_password": {
+   "rows": 1588,
+   "dropped": 293,
+   "frac": 0.185
+  },
+  "card_declined": {
+   "rows": 285,
+   "dropped": 75,
+   "frac": 0.263
+  },
+  "late_fee": {
+   "rows": 220,
+   "dropped": 48,
+   "frac": 0.218
+  },
+  "unauthorized_transaction_alert": {
+   "rows": 158,
+   "dropped": 0,
+   "frac": 0.0
+  },
+  "missing_order_confirmation": {
+   "rows": 151,
+   "dropped": 64,
+   "frac": 0.424
+  },
+  "invoice_receipt_copy_request": {
+   "rows": 149,
+   "dropped": 100,
+   "frac": 0.671
+  },
+  "compromised_card_replacement": {
+   "rows": 142,
+   "dropped": 40,
+   "frac": 0.282
+  },
+  "damaged_contents": {
+   "rows": 109,
+   "dropped": 76,
+   "frac": 0.697
+  },
+  "subscription_cancellation": {
+   "rows": 108,
+   "dropped": 0,
+   "frac": 0.0
+  },
+  "stuck_in_transit": {
+   "rows": 104,
+   "dropped": 0,
+   "frac": 0.0
+  },
+  "update_account_details": {
+   "rows": 103,
+   "dropped": 0,
+   "frac": 0.0
+  },
+  "password_and_2fa_recovery": {
+   "rows": 89,
+   "dropped": 0,
+   "frac": 0.0
+  },
+  "delivered_not_received": {
+   "rows": 87,
+   "dropped": 19,
+   "frac": 0.218
+  },
+  "duplicate_charge": {
+   "rows": 82,
+   "dropped": 0,
+   "frac": 0.0
+  },
+  "late_payment_fee_dispute": {
+   "rows": 81,
+   "dropped": 0,
+   "frac": 0.0
+  },
+  "delayed_refund": {
+   "rows": 74,
+   "dropped": 0,
+   "frac": 0.0
+  },
+  "unexpected_maintenance_fee": {
+   "rows": 63,
+   "dropped": 8,
+   "frac": 0.127
+  }
+ },
+ "kept_with_history": 106494
+}

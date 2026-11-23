@@ -1,0 +1,24 @@
+\begin{table}[t]
+\centering
+\caption{SentriFormer configuration (deployed checkpoint)}
+\label{tab:arch}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}ll@{}}
+\toprule
+Property & Value \\
+\midrule
+Backbone & Encoder--decoder Transformer, 4 + 4 layers \\
+$d_{\text{model}}$ / heads / head dim & 256 / 8 / 32 \\
+Feed-forward & 1024, GELU, dropout 0.1 \\
+Normalisation & Pre-LN (+ final LN), $\epsilon=10^{-6}$ \\
+Positions & Fixed sinusoidal, 512 \\
+Linear biases & None in backbone (heads keep bias) \\
+Embedding & $16{,}000\times256$, tied enc/dec/LM head \\
+Tokenizer & Byte-level BPE, 16k (106 special) \\
+Heads (on mean-pooled encoder) & Routing 33, sentiment 3, CSAT 5, urgency 1 \\
+Seq2seq core / total params & 11{,}447{,}296 / \textbf{11{,}654{,}698} \\
+\bottomrule
+\end{tabular}}
+\end{table}

@@ -1,0 +1,32 @@
+[00:44:44] re-initialised category_head
+[00:44:46] loading data
+[06:31:59] re-initialised category_head
+[06:32:01] loading data
+[06:32:07] data: cat=500000 csat=15217 sent=341451 urg=932 dial=531888
+[06:32:07] head warm-up: backbone frozen until step 2000
+[06:32:17] step 100 cat=10.404 csat=0.663 sent=0.933 urg=0.025 dial=3.168 | 0.097s/step | vram_peak=0.56GB
+[06:32:25] step 200 cat=9.233 csat=0.563 sent=0.655 urg=0.019 dial=3.200 | 0.094s/step | vram_peak=0.56GB
+[06:32:34] step 300 cat=9.160 csat=0.460 sent=0.535 urg=0.020 dial=3.166 | 0.092s/step | vram_peak=0.56GB
+[06:32:43] step 400 cat=9.002 csat=0.450 sent=0.470 urg=0.021 dial=3.173 | 0.091s/step | vram_peak=0.56GB
+[06:32:52] step 500 cat=8.829 csat=0.423 sent=0.483 urg=0.020 dial=3.151 | 0.091s/step | vram_peak=0.56GB
+[06:33:01] step 600 cat=8.765 csat=0.393 sent=0.445 urg=0.020 dial=3.195 | 0.091s/step | vram_peak=0.56GB
+[06:33:10] step 700 cat=8.616 csat=0.437 sent=0.454 urg=0.021 dial=3.211 | 0.090s/step | vram_peak=0.56GB
+[06:33:19] step 800 cat=8.724 csat=0.376 sent=0.468 urg=0.019 dial=3.203 | 0.090s/step | vram_peak=0.56GB
+[06:33:28] step 900 cat=8.645 csat=0.417 sent=0.474 urg=0.019 dial=3.181 | 0.090s/step | vram_peak=0.56GB
+[06:33:37] step 1000 cat=8.649 csat=0.423 sent=0.460 urg=0.019 dial=3.191 | 0.090s/step | vram_peak=0.56GB
+[06:33:47] EVAL step 1000: cat=0.3245 csatF1=0.2965 sentF1=0.6833 urgF1=0.1479 dial_loss=3.0333 score=1.1488
+[06:33:47]   new best -> model_best.pt
+[06:33:56] step 1100 cat=8.639 csat=0.376 sent=0.443 urg=0.019 dial=3.193 | 0.099s/step | vram_peak=1.15GB
+[06:34:05] step 1200 cat=8.649 csat=0.402 sent=0.466 urg=0.020 dial=3.135 | 0.098s/step | vram_peak=1.15GB
+[06:34:14] step 1300 cat=8.670 csat=0.369 sent=0.458 urg=0.017 dial=3.165 | 0.098s/step | vram_peak=1.15GB
+[06:34:23] step 1400 cat=8.645 csat=0.407 sent=0.409 urg=0.021 dial=3.229 | 0.097s/step | vram_peak=1.15GB
+[06:34:32] step 1500 cat=8.453 csat=0.369 sent=0.424 urg=0.018 dial=3.143 | 0.097s/step | vram_peak=1.15GB
+[06:34:41] step 1600 cat=8.659 csat=0.388 sent=0.443 urg=0.020 dial=3.185 | 0.096s/step | vram_peak=1.15GB
+[06:34:50] step 1700 cat=8.543 csat=0.344 sent=0.439 urg=0.020 dial=3.171 | 0.096s/step | vram_peak=1.15GB
+[06:34:59] step 1800 cat=8.509 csat=0.382 sent=0.443 urg=0.017 dial=3.167 | 0.096s/step | vram_peak=1.15GB
+[06:35:08] step 1900 cat=8.604 csat=0.378 sent=0.461 urg=0.019 dial=3.167 | 0.095s/step | vram_peak=1.15GB
+[06:35:17] step 2000 cat=8.632 csat=0.360 sent=0.451 urg=0.018 dial=3.203 | 0.095s/step | vram_peak=1.15GB
+[06:35:27] EVAL step 2000: cat=0.3209 csatF1=0.3218 sentF1=0.6966 urgF1=0.1629 dial_loss=3.0333 score=1.1989
+[06:35:27]   new best -> model_best.pt
+[06:35:27] GATE FAIL at step 2000: category acc 0.3209 < 0.55; stopping
+[06:35:27] finished at step 2000; best score 1.1989

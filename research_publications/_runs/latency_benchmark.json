@@ -1,0 +1,100 @@
+{
+ "torch": "2.6.0+cu124",
+ "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+ "cpu_threads": 8,
+ "n_messages": 30,
+ "message_words": [
+  4,
+  58
+ ],
+ "results": {
+  "cuda": {
+   "sentriformer_load_ms": 1094.994000159204,
+   "sentriformer_heads_plus_1_token": {
+    "n": 60,
+    "mean_ms": 59.708613339656345,
+    "median_ms": 59.43985003978014,
+    "p95_ms": 65.72159985080361,
+    "min_ms": 52.043800009414554,
+    "max_ms": 71.59480010159314
+   },
+   "sentriformer_full_analyze_greedy100": {
+    "n": 60,
+    "mean_ms": 610.8122016458461,
+    "median_ms": 586.0307499533519,
+    "p95_ms": 898.0690999887884,
+    "min_ms": 391.4391999132931,
+    "max_ms": 986.388900084421
+   },
+   "sentriformer_mean_reply_words": 16.266666666666666,
+   "distilbert_sst2_sentiment": {
+    "n": 60,
+    "mean_ms": 19.843236651892465,
+    "median_ms": 19.611099967733026,
+    "p95_ms": 23.44449982047081,
+    "min_ms": 16.150099923834205,
+    "max_ms": 23.74120010063052
+   },
+   "distilroberta_emotion": {
+    "n": 60,
+    "mean_ms": 21.084228324859094,
+    "median_ms": 20.75505000539124,
+    "p95_ms": 24.738800013437867,
+    "min_ms": 17.214199993759394,
+    "max_ms": 28.909499989822507
+   },
+   "flan_t5_small_reply_sampled": {
+    "n": 30,
+    "mean_ms": 2112.1372166632987,
+    "median_ms": 1690.124399960041,
+    "p95_ms": 4345.144500024617,
+    "min_ms": 353.16030005924404,
+    "max_ms": 8611.455700127408
+   }
+  },
+  "cpu": {
+   "sentriformer_load_ms": 720.7426999229938,
+   "sentriformer_heads_plus_1_token": {
+    "n": 60,
+    "mean_ms": 30.907019996084273,
+    "median_ms": 30.37300007417798,
+    "p95_ms": 33.8968001306057,
+    "min_ms": 26.584999868646264,
+    "max_ms": 46.79550020955503
+   },
+   "sentriformer_full_analyze_greedy100": {
+    "n": 60,
+    "mean_ms": 300.14099165952456,
+    "median_ms": 275.1672000158578,
+    "p95_ms": 501.7916997894645,
+    "min_ms": 179.66320016421378,
+    "max_ms": 912.1526998933405
+   },
+   "sentriformer_mean_reply_words": 16.266666666666666,
+   "distilbert_sst2_sentiment": {
+    "n": 60,
+    "mean_ms": 42.627729987725616,
+    "median_ms": 41.9351999880746,
+    "p95_ms": 51.68709997087717,
+    "min_ms": 34.36140017583966,
+    "max_ms": 72.40900001488626
+   },
+   "distilroberta_emotion": {
+    "n": 60,
+    "mean_ms": 39.251043317684285,
+    "median_ms": 37.83100005239248,
+    "p95_ms": 51.89090012572706,
+    "min_ms": 33.95970002748072,
+    "max_ms": 59.168600011616945
+   },
+   "flan_t5_small_reply_sampled": {
+    "n": 30,
+    "mean_ms": 1305.704880009095,
+    "median_ms": 843.5702500864863,
+    "p95_ms": 3095.8525999449193,
+    "min_ms": 203.92749994061887,
+    "max_ms": 5833.514300175011
+   }
+  }
+ }
+}

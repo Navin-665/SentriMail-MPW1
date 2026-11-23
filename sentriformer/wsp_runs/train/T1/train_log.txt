@@ -1,0 +1,22 @@
+[00:35:10] loading data
+[00:35:23] data: cat=800000 csat=15217 sent=341451 urg=932 dial=531888
+[00:35:23] head warm-up: backbone frozen until step 1000
+[00:35:52] step 100 cat=37.073 csat=0.643 sent=1.033 urg=0.024 dial=3.153 | 0.288s/step | vram_peak=0.56GB
+[00:36:17] step 200 cat=24.248 csat=0.588 sent=0.807 urg=0.024 dial=3.144 | 0.270s/step | vram_peak=0.56GB
+[00:36:43] step 300 cat=12.941 csat=0.587 sent=0.612 urg=0.021 dial=3.257 | 0.267s/step | vram_peak=0.56GB
+[00:37:09] step 400 cat=10.154 csat=0.545 sent=0.536 urg=0.018 dial=3.175 | 0.264s/step | vram_peak=0.56GB
+[00:37:34] step 500 cat=9.385 csat=0.473 sent=0.523 urg=0.019 dial=3.160 | 0.261s/step | vram_peak=0.56GB
+[00:38:00] step 600 cat=8.943 csat=0.433 sent=0.470 urg=0.018 dial=3.198 | 0.261s/step | vram_peak=0.56GB
+[00:38:26] step 700 cat=8.933 csat=0.437 sent=0.488 urg=0.022 dial=3.195 | 0.260s/step | vram_peak=0.56GB
+[00:38:52] step 800 cat=8.771 csat=0.419 sent=0.461 urg=0.022 dial=3.227 | 0.260s/step | vram_peak=0.56GB
+[00:39:17] step 900 cat=8.946 csat=0.418 sent=0.484 urg=0.020 dial=3.176 | 0.260s/step | vram_peak=0.56GB
+[00:39:43] step 1000 cat=8.783 csat=0.443 sent=0.459 urg=0.020 dial=3.214 | 0.260s/step | vram_peak=0.56GB
+[00:39:43] step 1000: backbone unfrozen
+[00:40:19] step 1100 cat=8.554 csat=0.383 sent=0.450 urg=0.019 dial=3.097 | 0.269s/step | vram_peak=2.08GB
+[00:40:54] step 1200 cat=8.624 csat=0.426 sent=0.438 urg=0.018 dial=3.066 | 0.276s/step | vram_peak=2.17GB
+[00:41:31] step 1300 cat=8.681 csat=0.420 sent=0.453 urg=0.019 dial=3.062 | 0.283s/step | vram_peak=2.17GB
+[00:42:07] step 1400 cat=8.641 csat=0.374 sent=0.455 urg=0.022 dial=3.088 | 0.288s/step | vram_peak=2.17GB
+[00:42:43] step 1500 cat=8.558 csat=0.357 sent=0.432 urg=0.019 dial=3.074 | 0.293s/step | vram_peak=2.18GB
+[00:43:12] EVAL step 1500: cat=0.3627 csatF1=0.3031 sentF1=0.6918 urgF1=0.1479 dial_loss=2.9003 score=1.2154
+[00:43:12]   new best -> model_best.pt
+[00:43:49] step 1600 cat=8.583 csat=0.374 sent=0.423 urg=0.020 dial=3.056 | 0.316s/step | vram_peak=2.18GB

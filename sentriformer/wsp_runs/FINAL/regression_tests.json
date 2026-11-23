@@ -1,0 +1,61 @@
+{
+  "T1_strict_load": {
+    "pass": true,
+    "detail": {
+      "tensors": 123
+    }
+  },
+  "T2_edit_scope": {
+    "pass": true,
+    "detail": {
+      "differing_tensors": [
+        "category_head.dense.weight",
+        "csat_head.dense.weight"
+      ]
+    }
+  },
+  "T3_generation_unchanged": {
+    "pass": true,
+    "detail": {
+      "identical": "50/50"
+    }
+  },
+  "T4_robust_inputs": {
+    "pass": true,
+    "detail": {
+      "long_781_tokens": {
+        "category": "Credit card or prepaid card",
+        "truncated": true,
+        "response_len": 115
+      },
+      "empty": {
+        "category": "Credit reporting, credit repair services, or other personal consumer reports",
+        "truncated": false,
+        "response_len": 74
+      },
+      "unicode": {
+        "category": "Mortgage",
+        "truncated": false,
+        "response_len": 90
+      }
+    }
+  },
+  "T5_originals_untouched": {
+    "pass": true,
+    "detail": {
+      "checked": [
+        "checkpoints/classification/classifier_best.pt",
+        "checkpoints/multitask/multitask_best.pt",
+        "checkpoints/m10_3_sft/m10_3_sft_best.pt",
+        "checkpoints/config.json"
+      ]
+    }
+  },
+  "T6_reproduces_recorded_val_predictions": {
+    "pass": true,
+    "detail": {
+      "agreement": "1996/2000"
+    }
+  },
+  "all_pass": true
+}

@@ -1,0 +1,64 @@
+{
+  "timestamp": "2026-09-08 22:45:15",
+  "pipeline": "M10.3",
+  "splits": {
+    "train": {
+      "input_total": 615698,
+      "dropped_dm": 113,
+      "dropped_off_domain": 2609,
+      "dropped_low_quality": 5791,
+      "dropped_contaminated": 0,
+      "orphans_repaired": 30933,
+      "templates_added": 4624,
+      "dedup_removed": 81421,
+      "output_total": 530388
+    },
+    "val": {
+      "input_total": 34175,
+      "dropped_dm": 3,
+      "dropped_off_domain": 143,
+      "dropped_low_quality": 316,
+      "dropped_contaminated": 0,
+      "orphans_repaired": 1739,
+      "templates_added": 0,
+      "dedup_removed": 2243,
+      "output_total": 31470
+    },
+    "test": {
+      "input_total": 34658,
+      "dropped_dm": 2,
+      "dropped_off_domain": 148,
+      "dropped_low_quality": 360,
+      "dropped_contaminated": 0,
+      "orphans_repaired": 1707,
+      "templates_added": 0,
+      "dedup_removed": 2236,
+      "output_total": 31912
+    }
+  },
+  "train_response_length": {
+    "mean": 21.3,
+    "median": 19.0,
+    "min": 8,
+    "max": 120,
+    "std": 13.2
+  },
+  "source_distribution": {
+    "bitext": 15747,
+    "twcs": 514611,
+    "template_4tier": 30
+  },
+  "intent_distribution": {
+    "cancellation": 9764,
+    "general": 382400,
+    "account": 35960,
+    "delivery": 35054,
+    "billing": 23056,
+    "late_fee": 244,
+    "refund": 13606,
+    "feedback": 13477,
+    "order_delay": 14753,
+    "card_declined": 316,
+    "login_password": 1758
+  }
+}

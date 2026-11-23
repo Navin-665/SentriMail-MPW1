@@ -1,0 +1,29 @@
+{
+  "Strategy A (M8 Backbone + M9.2 Cat + M9.4 CSAT)": {
+    "category_accuracy": 0.1898,
+    "category_weighted_f1": 0.12339045049410567,
+    "csat_accuracy": 0.6218390804597701,
+    "csat_within_1": 0.6977011494252874,
+    "csat_mae": 1.1942528735632183,
+    "dialogue_loss": 14.461410390338312,
+    "dialogue_ppl": 1907702.8699740877
+  },
+  "Strategy B (M8 Enc/Emb + M9.3 Dec + M9.2 Cat + M9.4 CSAT)": {
+    "category_accuracy": 0.1898,
+    "category_weighted_f1": 0.12339045049410567,
+    "csat_accuracy": 0.6218390804597701,
+    "csat_within_1": 0.6977011494252874,
+    "csat_mae": 1.1942528735632183,
+    "dialogue_loss": 7.064242607361228,
+    "dialogue_ppl": 1169.3959440830617
+  },
+  "Strategy C (M9.2 Classifier Backbone + M9.3 Dec + M9.4 CSAT)": {
+    "category_accuracy": 0.7318,
+    "category_weighted_f1": 0.7224788879308559,
+    "csat_accuracy": 0.4471264367816092,
+    "csat_within_1": 0.7114942528735633,
+    "csat_mae": 1.2264367816091954,
+    "dialogue_loss": 22.138589573454098,
+    "dialogue_ppl": 485165195.4097903
+  }
+}
