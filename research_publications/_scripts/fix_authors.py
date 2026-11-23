@@ -2,7 +2,7 @@
 import os, re
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-AUTH = r"""\author{\IEEEauthorblockN{Naveen Kumar N, Lohith M, Vansh Paryani, Yash Kumar and Prof.\ Syeeda Mujnaseeba}
+AUTH = r"""\author{\IEEEauthorblockN{Naveen Kumar N, Lohith M, Vansh Paryani, Yash Kumar and Prof.\ Syeeda Mujeebunnisa}
 \IEEEauthorblockA{\textit{Department of Artificial Intelligence and Machine Learning}\\
 \textit{BMS College of Engineering}, Bengaluru, India\\
 \{naveenkumarn.ai24, lohithm.ai24, vanshparyani.ai23, yashkumar.ai23, syeedamujnaseeba.mel\}@bmsce.ac.in}}

@@ -5,7 +5,7 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 AFF = r"\textit{Dept.\ of Artificial Intelligence and Machine Learning} \\ \textit{BMS College of Engineering}\\ Bengaluru, India \\ "
 people = [("Naveen Kumar N", "naveenkumarn.ai24@bmsce.ac.in"), ("Lohith M", "lohithm.ai24@bmsce.ac.in"),
           ("Vansh Paryani", "vanshparyani.ai23@bmsce.ac.in"), ("Yash Kumar", "yashkumar.ai23@bmsce.ac.in"),
-          ("Prof.\\ Syeeda Mujnaseeba (Guide)", "syeedamujnaseeba.mel@bmsce.ac.in")]
+          ("Prof.\\ Syeeda Mujeebunnisa (Guide)", "syeedamujnaseeba.mel@bmsce.ac.in")]
 blocks = [r"\IEEEauthorblockN{%s}" "\n" r"\IEEEauthorblockA{%s\texttt{%s}}" % (n, AFF, e) for n, e in people]
 AUTH = "\\author{\n" + "\n\\and\n".join(blocks[:3]) + "\n\\linebreakand\n" + "\n\\and\n".join(blocks[3:]) + "\n}\n\n"
 LBA = r"""\makeatletter
@@ -40,5 +40,5 @@ for rel, pairs in REPL.items():
         s = re.sub(r"\\author\{.*?\n\}\n\n", lambda m: AUTH, s, count=1, flags=re.S)
         if "linebreakand}{" not in s: s = s.replace("\\begin{document}", LBA + "\n\\begin{document}", 1)
         s = s.replace("[Acknowledgment placeholder: supervisors, institution and funding, to be supplied by the authors.]",
-                      "The authors thank Prof.\\ Syeeda Mujnaseeba for her guidance and BMS College of Engineering, Bengaluru, for providing the facilities used in this work.")
+                      "The authors thank Prof.\\ Syeeda Mujeebunnisa for her guidance and BMS College of Engineering, Bengaluru, for providing the facilities used in this work.")
     open(p, "w", encoding="utf-8").write(s); print("edited", rel)
