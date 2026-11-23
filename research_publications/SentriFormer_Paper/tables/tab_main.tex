@@ -1,0 +1,18 @@
+\begin{table}[!t]
+\centering
+\caption{Main sealed-test results with 95\% bootstrap confidence intervals}
+\label{tab:main}
+\footnotesize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Model & Routing acc.\ (\%) & Sentiment acc.\ / mF1 & CSAT exact / $\pm$1 (\%) \\
+\midrule
+Majority class & 27.2 & 79.6 / -- & -- \\
+Routing specialist (same backbone) & 79.2 & -- & -- \\
+\textbf{SentriFormer (SF-Ctx)} & \textbf{73.7} {\scriptsize[73.5, 74.0]} & \textbf{88.1} / \textbf{0.758} & \textbf{72.4} / \textbf{82.0} \\
+\quad 24-class merged taxonomy & \textbf{85.0} {\scriptsize[84.8, 85.2]} & -- & -- \\
+\quad CI (sentiment mF1 / CSAT exact) & -- & {\scriptsize[0.748, 0.767]} & {\scriptsize[69.4, 75.5]} \\
+\bottomrule
+\end{tabular}}
+\end{table}

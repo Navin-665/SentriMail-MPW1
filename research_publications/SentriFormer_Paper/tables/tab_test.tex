@@ -1,13 +1,13 @@
-\begin{table*}[t]
+\begin{table*}[!t]
 \centering
-\caption{Sealed test-set results. Each checkpoint was scored on the test split exactly once, after selection on validation data. Routing at 512 tokens unless noted; $n$ = test rows. Best multi-task value in bold.}
+\caption{Stage-wise ablation on the sealed test set. Each checkpoint was scored on the test split exactly once, after selection on validation data. Routing at 512 tokens unless noted. Bold: best multi-task value.}
 \label{tab:test}
 \footnotesize
 \setlength{\tabcolsep}{4.2pt}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}lcccccc|c@{}}
 \toprule
-Metric (test) & M9.2 specialist & M9.5 joint & M10.3 SFT & E1 ridge repair & T3 & T4d & Reference \\
+Metric (test) & Routing specialist & Joint heads & Reply fine-tune & Closed-form repair & SF-MT & SF-Ctx & Reference \\
 \midrule
 Routing accuracy (\%) ($n$=123{,}229) & 79.15 & 73.99 & 39.59 & 63.74 & 72.42 & \textbf{73.71} & majority 27.2 \\
 Routing accuracy @128 tokens (\%) & 76.90 & 73.29 & 42.27 & 63.35 & 70.98 & \textbf{72.23} & -- \\
@@ -21,6 +21,6 @@ Dialogue loss / perplexity ($n$=31{,}912) & -- & invalid$^\dagger$ & -- & -- & 2
 Portal-loop replies, multi-turn (\%) & -- & -- & -- & -- & 31.3 & \textbf{0.7} & human agents 15 \\
 ROUGE-L / distinct-2 (300 contexts) & -- & -- & -- & -- & \textbf{0.135} / 0.209 & 0.132 / \textbf{0.235} & -- \\
 \bottomrule
-\multicolumn{8}{@{}l}{\scriptsize $^\dagger$M9.5 reported a perplexity of 1.04 caused by a causal-mask leak; it is excluded. The specialist M9.2 has no other heads trained. Urgency is reported separately in Section~\ref{sec:neg}.}
+\multicolumn{8}{@{}l}{\scriptsize $^\dagger$The joint-heads model reported a perplexity of 1.04 caused by a causal-mask leak; it is excluded. The routing specialist has no other heads trained. Urgency is reported separately in Section~\ref{sec:neg}.}
 \end{tabular}}
 \end{table*}

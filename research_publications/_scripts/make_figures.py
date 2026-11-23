@@ -60,10 +60,10 @@ def find_acc(d, key_hint):
 acc_e0 = find_acc(e0, ""); acc_e1 = find_acc(e1, "")
 json.dump({"e0": acc_e0, "e1": acc_e1}, open(os.path.join(OUT, "_history_sources.json"), "w"), indent=1)
 pick = lambda d, name: next(v for kk, v in d.items() if name in kk)
-stages = [("M9.2\nspecialist", pick(acc_e0, "classifier_best")), ("M9.5\njoint", pick(acc_e0, "multitask_best")),
-          ("M10.3\nSFT", pick(acc_e0, "m10_3_sft_best")), ("E1\nridge map", list(acc_e1.values())[0]),
-          ("T3", (t3["category_len512"]["accuracy"], t3["category_len512"]["macro_f1_sklearn"])),
-          ("T4d", (t4["category_len512"]["accuracy"], t4["category_len512"]["macro_f1_sklearn"]))]
+stages = [("Routing\nspecialist", pick(acc_e0, "classifier_best")), ("Joint\nheads", pick(acc_e0, "multitask_best")),
+          ("Reply\nfine-tune", pick(acc_e0, "m10_3_sft_best")), ("Closed-form\nrepair", list(acc_e1.values())[0]),
+          ("SF-MT", (t3["category_len512"]["accuracy"], t3["category_len512"]["macro_f1_sklearn"])),
+          ("SF-Ctx", (t4["category_len512"]["accuracy"], t4["category_len512"]["macro_f1_sklearn"]))]
 sup = np.array(t4["category_len512"]["confusion_matrix"]).sum(1); maj = sup.max() / sup.sum()
 fig, ax = plt.subplots(figsize=(W1, 1.9))
 x = np.arange(len(stages)); a = [s[1][0] * 100 for s in stages]; f = [s[1][1] * 100 for s in stages]
@@ -83,7 +83,7 @@ fig, ax = plt.subplots(figsize=(W1, 2.9))
 ax.barh(range(len(rows)), [r[1] for r in rows], color=C[0])
 for i, r in enumerate(rows): ax.text(r[1] + .01, i, f"{r[1]:.2f} (n={r[2]:,})", va="center", fontsize=5.3)
 ax.set_yticks(range(len(rows))); ax.set_yticklabels([short(r[0]) for r in rows], fontsize=5.6)
-ax.set_xlim(0, 1.18); ax.set_xlabel("F1 on sealed test (T4d)")
+ax.set_xlim(0, 1.18); ax.set_xlabel("F1 on sealed test (SF-Ctx)")
 save(fig, "perclass_f1")
 
 # 4. Confusion matrices: sentiment and CSAT (row-normalised)
@@ -111,14 +111,14 @@ ax.text(.04, .9, f"ECE={t4['category_len512']['ece_15bin']:.3f}", fontsize=6)
 save(fig, "reliability")
 
 # 6. Reply-quality: portal loop (test, T3 vs T4d) and T5a detectors (validation, replication)
-p3 = J("t4", "eval", "T3_test", "metrics.json"); p4 = J("t4", "eval", "T4d_test", "metrics.json")
-json.dump({"T3": p3, "T4d": p4}, open(os.path.join(OUT, "_t4_test_metrics_dump.json"), "w"), indent=1, default=str)
+
+
 rt = J("t5", "t5a_retest.json")["models"]
 fig, ax = plt.subplots(figsize=(W1, 1.75))
 mets = [("broken_link", "broken link"), ("generic_whole", "whole-reply\ngeneric"), ("generic_phrase", "generic\nphrase"),
         ("portal", "portal\nloop"), ("action", "action\nword")]
 x = np.arange(len(mets))
-for i, (m, lab) in enumerate([("T4d", "T4d (parent)"), ("T5a_ctrl", "T5a-ctrl (unfiltered)"), ("T5a", "T5a (deployed)")]):
+for i, (m, lab) in enumerate([("T4d", "SF-Ctx"), ("T5a_ctrl", "control (no filter)"), ("T5a", "SentriFormer (final)")]):
     v = [rt[m][k2] * 100 for k2, _ in mets]
     ax.bar(x + (i - 1) * .26, v, .26, color=[C[5], C[4], C[0]][i], label=lab)
     for xi, vi in zip(x, v): ax.text(xi + (i - 1) * .26, vi + .8, f"{vi:.1f}", ha="center", fontsize=4.8, rotation=90)
@@ -128,11 +128,11 @@ save(fig, "reply_quality_t5a")
 
 # 7. Phase-T training dynamics: val-subset category acc and dialogue val loss vs step
 fig, axs = plt.subplots(1, 2, figsize=(W1, 1.55))
-for i, run in enumerate(["T3", "T4a", "T4d", "T5a"]):
+for i, (run, lab) in enumerate([("T3", "SF-MT"), ("T4a", "+context"), ("T4d", "SF-Ctx"), ("T5a", "final")]):
     h = J("train", run, "eval_history.json")
     s = [e["step"] / 1e3 for e in h]
-    axs[0].plot(s, [e["category"]["acc"] * 100 for e in h], "-o", ms=1.6, lw=.9, color=C[i], label=run)
-    axs[1].plot(s, [e["dialogue"]["val_loss"] for e in h], "-o", ms=1.6, lw=.9, color=C[i], label=run)
+    axs[0].plot(s, [e["category"]["acc"] * 100 for e in h], "-o", ms=1.6, lw=.9, color=C[i], label=lab)
+    axs[1].plot(s, [e["dialogue"]["val_loss"] for e in h], "-o", ms=1.6, lw=.9, color=C[i], label=lab)
 axs[0].set_ylabel("val-subset cat. acc (%)"); axs[1].set_ylabel("dialogue val loss")
 for ax in axs: ax.set_xlabel("step ($\\times10^3$)"); ax.grid(alpha=.25)
 axs[0].legend(frameon=False, ncol=2, fontsize=5.5)

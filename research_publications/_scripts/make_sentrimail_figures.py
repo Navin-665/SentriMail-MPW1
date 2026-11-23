@@ -7,9 +7,9 @@ RUNS, OUT = sys.argv[1], sys.argv[2]; os.makedirs(OUT, exist_ok=True)
 L = json.load(open(os.path.join(RUNS, "latency_benchmark.json")))["results"]
 plt.rcParams.update({"font.size": 7.5, "font.family": "serif", "axes.spines.top": False, "axes.spines.right": False,
                      "savefig.bbox": "tight", "savefig.pad_inches": 0.02})
-stages = [("sentriformer_heads_plus_1_token", "SentriFormer\nheads"), ("distilbert_sst2_sentiment", "DistilBERT\nsentiment"),
-          ("distilroberta_emotion", "DistilRoBERTa\nemotion"), ("sentriformer_full_analyze_greedy100", "SentriFormer\nheads+reply"),
-          ("flan_t5_small_reply_sampled", "flan-T5-small\nauto-reply")]
+stages = [("sentriformer_heads_plus_1_token", "SF\nheads"), ("distilbert_sst2_sentiment", "DistilBERT\nsentiment"),
+          ("distilroberta_emotion", "RoBERTa\nemotion"), ("sentriformer_full_analyze_greedy100", "SF heads\n+ reply"),
+          ("flan_t5_small_reply_sampled", "flan-T5\nreply")]
 fig, ax = plt.subplots(figsize=(3.45, 1.9))
 x = range(len(stages))
 for i, (dev, col, lab) in enumerate([("cpu", "#1f4e79", "CPU"), ("cuda", "#e39b1f", "GPU (RTX 3060)")]):

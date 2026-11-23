@@ -1,4 +1,4 @@
-\begin{table}[t]
+\begin{table}[!t]
 \centering
 \caption{Supervised splits derived from SentriCorpus (rows)}
 \label{tab:data}
@@ -15,8 +15,8 @@ CSAT (1--5) & 15{,}217 & 849 & 870 & post-contact survey \\
 Sentiment (3 cl.) & 341{,}451 & 20{,}721 & 20{,}453 & teacher + human \\
 Urgency (0--3) & 932 & 200 & 202 & public annot.\ set \\
 Dialogue (multi-turn) & 479{,}445 & 28{,}454 & 28{,}907 & agent replies \\
-\quad T4d filtered & 414{,}247 & -- & -- & portal filter \\
-\quad T5a filtered & 384{,}751 & -- & -- & reply filter \\
+\quad + portal filter (SF-Ctx) & 414{,}247 & -- & -- & portal filter \\
+\quad + reply filter (final) & 384{,}751 & -- & -- & reply filter \\
 \bottomrule
 \end{tabular}}
 \end{table}

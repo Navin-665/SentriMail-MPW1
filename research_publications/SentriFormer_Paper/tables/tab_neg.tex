@@ -1,21 +1,21 @@
-\begin{table}[t]
+\begin{table}[!t]
 \centering
-\caption{Interventions rejected under frozen criteria (validation only)}
+\caption{Interventions rejected under pre-specified criteria (validation only)}
 \label{tab:neg}
 \footnotesize
 \setlength{\tabcolsep}{2.5pt}
 \resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}p{0.9cm}p{3.1cm}p{3.95cm}@{}}
+\begin{tabular}{@{}p{3.3cm}p{4.6cm}@{}}
 \toprule
-Exp. & Intervention & Outcome \\
+Intervention & Outcome against matched controls \\
 \midrule
-T1/T2 & class-weighted CE + label smoothing 0.1 & routing collapsed 64\%$\rightarrow$36\%; gate failed \\
-E2 & gradient-free class-prior bias & +1.6 pp acc but 8 key classes $-$2 pp \\
-P1 & scale 4 decoder FFN neurons & generic rate within 5 random controls \\
-P2 & add ``generic'' direction to LN bias & matched by random directions; action words 38.4$\rightarrow$30.4\% \\
-T5c & MMI rerank of 8 samples & random pick beat MMI; more broken links \\
-T6 & PMI$<$0 reply filter & PMI gain CI incl.\ 0; action $-$4.4 pp \\
-T7u & refit urgency projection & MAE 0.752 vs mean-predictor 0.671 \\
+Class-weighted CE + label smoothing 0.1 & routing collapsed 64\%$\rightarrow$36\%; stop gate failed \\
+Gradient-free class-prior bias edit & +1.6 pp accuracy, but 8 key classes lost $>$2 pp \\
+Scaling 4 ``generic'' decoder FFN neurons & no effect beyond 5 random-neuron controls \\
+Adding a ``generic'' direction to a LayerNorm bias & matched by random directions; action words 38.4$\rightarrow$30.4\% \\
+MMI re-ranking of 8 sampled replies & a random pick beat MMI; more broken links \\
+PMI$<$0 reply filter (64k more rows removed) & relevance gain CI includes 0; action words $-$4.4 pp \\
+Re-fitting the urgency projection & MAE 0.752 vs.\ 0.671 for a mean predictor \\
 \bottomrule
 \end{tabular}}
 \end{table}

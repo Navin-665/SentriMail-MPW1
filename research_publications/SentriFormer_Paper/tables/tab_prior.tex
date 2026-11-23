@@ -1,0 +1,21 @@
+\begin{table}[!t]
+\centering
+\caption{Positioning against representative prior work (R: routing / complaint classification, S: sentiment, C: satisfaction, G: reply generation)}
+\label{tab:prior}
+\footnotesize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+Work & R & S & C & G & From scratch & Single model \\
+\midrule
+Xu et al.~\cite{xu2017new} & -- & -- & -- & \checkmark & \checkmark & -- \\
+Hardalov et al.~\cite{hardalov2018towards} & -- & -- & -- & \checkmark & \checkmark & -- \\
+Preo\c{t}iuc-Pietro et al.~\cite{preotiucpietro2019automatically} & \checkmark & -- & -- & -- & \checkmark & -- \\
+Jin and Aletras~\cite{jin2020complaint} & \checkmark & -- & -- & -- & -- & -- \\
+Oyewola et al.~\cite{oyewola2023consumer} & \checkmark & -- & -- & -- & \checkmark & -- \\
+Oraby et al.~\cite{oraby2017how} & -- & -- & \checkmark & -- & \checkmark & -- \\
+DialoGPT~\cite{zhang2020dialogpt} & -- & -- & -- & \checkmark & -- & -- \\
+\textbf{SentriFormer (ours)} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+\bottomrule
+\end{tabular}}
+\end{table}

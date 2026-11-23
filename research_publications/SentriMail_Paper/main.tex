@@ -3,6 +3,8 @@
 \usepackage{fontspec}
 \setmainfont{texgyretermes}[Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
 \usepackage{cite}
+\usepackage{placeins}
+\usepackage{balance}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -12,29 +14,15 @@
 \usepackage[hidelinks]{hyperref}
 \graphicspath{{figures/}}
 
+
 \begin{document}
 
 \title{SentriMail: A Human-in-the-Loop Complaint Management System with Multilingual Intake, Hybrid Prioritisation and Compact On-Premise Language-Model Assistance}
 
-\author{
-\IEEEauthorblockN{Author Name 1 (placeholder)}
-\IEEEauthorblockA{\textit{Department (placeholder)} \\
-\textit{Institution (placeholder)}\\
-City, Country \\
-email (placeholder)}
-\and
-\IEEEauthorblockN{Author Name 2 (placeholder)}
-\IEEEauthorblockA{\textit{Department (placeholder)} \\
-\textit{Institution (placeholder)}\\
-City, Country \\
-email (placeholder)}
-\and
-\IEEEauthorblockN{Author Name 3 (placeholder)}
-\IEEEauthorblockA{\textit{Department (placeholder)} \\
-\textit{Institution (placeholder)}\\
-City, Country \\
-email (placeholder)}
-}
+\author{\IEEEauthorblockN{Naveen Kumar N, Lohith M, Vansh Paryani, Yash Kumar and Prof.\ Syeeda Mujnaseeba}
+\IEEEauthorblockA{\textit{Department of Artificial Intelligence and Machine Learning}\\
+\textit{BMS College of Engineering}, Bengaluru, India\\
+\{naveenkumarn.ai24, lohithm.ai24, vanshparyani.ai23, yashkumar.ai23, syeedamujnaseeba.mel\}@bmsce.ac.in}}
 
 \maketitle
 
@@ -67,15 +55,7 @@ The contributions of this paper are system-level and distinct from the companion
 
 \textbf{Human-in-the-loop ML.} Surveys~\cite{wu2022survey,mosqueirarey2023human} frame systems in which humans correct or approve model outputs. Retrieval-augmented generation~\cite{lewis2020rag} is a route to grounded drafts that we leave to future work.
 
-\section{Problem Definition and Research Gap}
-Given a stream of complaints $\{x_i\}$ written in any of several languages, the system must (a) obtain an English text $\tilde{x}_i$, (b) assign a priority $p_i\in\{\text{LOW},\text{MEDIUM},\text{HIGH},\text{CRITICAL}\}$, (c) close low-risk complaints with an acknowledgement, and (d) give an administrator the evidence and a draft for the rest. It must do this on commodity hardware without external LLM APIs, and must never send model-generated text for complaints that need judgement.
-
-Existing work covers pieces of this: routing, complaint detection, chatbots. Few published systems combine multilingual voice intake, explainable prioritisation and on-premise generative assistance with an explicit policy for which model outputs may affect customers. SentriMail is built to fill that gap.
-
-\section{System Architecture}
-Fig.~\ref{fig:arch} shows the components and Table~\ref{tab:stack} the technology stack.
-
-\begin{figure*}[t]
+\begin{figure*}[!t]
 \centering
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[font=\sffamily\scriptsize, node distance=4mm and 6mm,
@@ -101,6 +81,15 @@ Fig.~\ref{fig:arch} shows the components and Table~\ref{tab:stack} the technolog
 \label{fig:arch}
 \end{figure*}
 
+\section{Problem Definition and Research Gap}
+Given a stream of complaints $\{x_i\}$ written in any of several languages, the system must (a) obtain an English text $\tilde{x}_i$, (b) assign a priority $p_i\in\{\text{LOW},\text{MEDIUM},\text{HIGH},\text{CRITICAL}\}$, (c) close low-risk complaints with an acknowledgement, and (d) give an administrator the evidence and a draft for the rest. It must do this on commodity hardware without external LLM APIs, and must never send model-generated text for complaints that need judgement.
+
+Existing work covers pieces of this: routing, complaint detection, chatbots. Few published systems combine multilingual voice intake, explainable prioritisation and on-premise generative assistance with an explicit policy for which model outputs may affect customers. SentriMail is built to fill that gap.
+
+\section{System Architecture}
+Fig.~\ref{fig:arch} shows the components and Table~\ref{tab:stack} the technology stack.
+
+
 \input{tables/tab_stack}
 
 \subsection{Intake and language handling}
@@ -121,9 +110,9 @@ where $\sigma$ is the sentiment confidence and $\epsilon$ the emotion confidence
 
 \textbf{Graceful degradation.} If SentriFormer cannot be loaded, sentiment falls back to DistilBERT-SST2 and then to a keyword lexicon. Emotion falls back to keyword patterns. The application keeps working with reduced capability.
 
-\begin{figure}[t]
+\begin{figure}[!t]
 \centering
-\resizebox{\columnwidth}{!}{%
+\resizebox{!}{0.34\textheight}{%
 \begin{tikzpicture}[font=\sffamily\scriptsize, node distance=3.2mm,
  s/.style={draw, rounded corners=2pt, align=center, text width=3.6cm, minimum height=6mm, fill=#1}, s/.default=white,
  d/.style={draw, diamond, aspect=2.4, align=center, inner sep=0.5pt, fill=yellow!12},
@@ -152,7 +141,7 @@ Complaints whose final priority is LOW receive an automatic, translated acknowle
 \subsection{Data, administration and analytics}
 MongoDB stores users (hashed passwords, roles), complaints (original and translated text, all analysis fields, a SentriFormer sub-document, status and timestamps), replies and login logs, with indexes on user, status and creation time. The dashboard (Fig.~\ref{fig:ui}) shows totals, pending counts, resolutions today, average response time, and four charts: category, priority, daily volume and sentiment by category. Complaints can be exported to CSV.
 
-\begin{figure}[t]
+\begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{admin_dashboard}\\[1mm]
 \includegraphics[width=0.85\columnwidth]{submit_form}
@@ -162,18 +151,20 @@ MongoDB stores users (hashed passwords, roles), complaints (original and transla
 
 \input{tables/tab_model}
 
+\FloatBarrier
 \section{Implementation and Experimental Setup}
 SentriMail is implemented in Python (FastAPI, Jinja2, pymongo, APScheduler, Hugging Face Transformers, PyTorch). SentriFormer is imported from its own repository through a configurable path, so the application and the model can be versioned separately. The model is the deployed T5a checkpoint (46.7\,MB) described in the companion paper.
 
 \textbf{Latency benchmark.} We wrote a benchmark set of 30 complaint messages (4--58 words) covering billing, delivery, account access, fraud, lending, mortgages, service quality and positive feedback. Each model stage was timed in isolation with two repetitions per message after a warm-up call (flan-T5 once per message), on an RTX~3060 Laptop GPU and on the laptop CPU with 8 PyTorch threads. We also ran the integrated \texttt{analyze\_complaint()} function on all 30 messages, replicating the application's post-analysis keyword escalation and LOW-priority branch, to record end-to-end latency and the resulting decisions. No database or web server was involved in these measurements.
 
+\FloatBarrier
 \section{Results and Discussion}
 \subsection{Latency}
 Table~\ref{tab:lat} and Fig.~\ref{fig:lat} report the measurements. All SentriFormer heads together take a median of 30\,ms on the CPU. That is faster than the DistilBERT sentiment model alone (42\,ms), even though SentriFormer also produces routing and CSAT. Adding the generated draft brings the total to 275\,ms. The sampled flan-T5-small reply used by the previous version of the application is about 3$\times$ slower (844\,ms median) and has a heavy tail (p95 3.1\,s). At batch size one, the CPU beats the GPU for SentriFormer because kernel-launch overhead dominates a model this small; the larger DistilBERT models gain from the GPU. The integrated analysis of a complaint takes 531\,ms median (p95 649\,ms). The first call, which loads every model, takes 43\,s and happens once per process.
 
 \input{tables/tab_latency}
 
-\begin{figure}[t]
+\begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{latency}
 \caption{Median per-stage inference latency (log scale; whiskers show p95).}
@@ -188,6 +179,7 @@ Table~\ref{tab:pipe} summarises the decisions on the benchmark. SentriFormer out
 \subsection{Discussion}
 The design choices follow from the evidence. Sentiment, which is well supported offline (88.1\% accuracy), is the only SentriFormer output that changes system behaviour. Routing (73.7\% over 33 classes) is shown with its confidence and a manual-check flag, in line with confidence-gated routing practice~\cite{mandal2018cognitive}. CSAT, whose minority classes are poorly predicted, is shown only as a hint. Drafts remain suggestions because ROUGE-based and rule-based reply metrics cannot certify correctness~\cite{ji2023survey}. The rule-based priority layer keeps every decision explainable in terms an administrator can check, and the hourly escalation bounds the waiting time of any complaint.
 
+\FloatBarrier
 \section{Limitations and Future Scope}
 \textbf{Evaluation.} SentriMail has not yet been evaluated with real users. A labelled set of priority decisions, measurements of admin acceptance and edit distance for drafts, and a usability study are needed to quantify its benefit. The latency measurements cover model inference, not translation or e-mail delivery.
 \textbf{Decision boundaries.} Our audit of the code found that the auto-acknowledgement branch checks only the LOW priority. A stricter auto-resolvability test, which blocks refund, chargeback, legal, fraud and similar terms and very negative sentiment, is computed but not enforced; enforcing it is a one-line change. Routing output is advisory and not yet used to assign complaints to teams, and the stored category field is not populated from it.
@@ -198,8 +190,9 @@ The design choices follow from the evidence. Sentiment, which is well supported 
 SentriMail shows how a compact on-premise language model can be integrated into a complaint-management workflow responsibly. Each model output is used only where its offline evidence supports it, every priority decision is explainable, and generated text reaches customers only after human approval. With multilingual and voice intake, hybrid prioritisation, time-based escalation and analytics, the system analyses a complaint in about half a second on a laptop. The next step is a user study to measure its effect on response time and resolution quality.
 
 \section*{Acknowledgment}
-[Acknowledgment placeholder: supervisors, institution and funding, to be supplied by the authors.]
+The authors thank Prof.\ Syeeda Mujnaseeba for her guidance and BMS College of Engineering, Bengaluru, for providing the facilities used in this work.
 
+\balance
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 

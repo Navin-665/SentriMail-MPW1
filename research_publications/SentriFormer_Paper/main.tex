@@ -3,6 +3,8 @@
 \usepackage{fontspec}
 \setmainfont{texgyretermes}[Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
 \usepackage{cite}
+\usepackage{placeins}
+\usepackage{balance}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -12,82 +14,74 @@
 \usepackage[hidelinks]{hyperref}
 \graphicspath{{figures/}}
 
+
 \begin{document}
 
-\title{SentriFormer: A Compact Multi-Task Encoder--Decoder Transformer Trained from Scratch for Complaint Routing, Satisfaction Estimation and Support-Reply Generation}
+\title{SentriFormer: A 12M-Parameter Multi-Task Transformer Trained from Scratch for Customer-Complaint Triage and Reply Drafting}
 
-\author{
-\IEEEauthorblockN{Author Name 1 (placeholder)}
-\IEEEauthorblockA{\textit{Department (placeholder)} \\
-\textit{Institution (placeholder)}\\
-City, Country \\
-email (placeholder)}
-\and
-\IEEEauthorblockN{Author Name 2 (placeholder)}
-\IEEEauthorblockA{\textit{Department (placeholder)} \\
-\textit{Institution (placeholder)}\\
-City, Country \\
-email (placeholder)}
-\and
-\IEEEauthorblockN{Author Name 3 (placeholder)}
-\IEEEauthorblockA{\textit{Department (placeholder)} \\
-\textit{Institution (placeholder)}\\
-City, Country \\
-email (placeholder)}
-}
+\author{\IEEEauthorblockN{Naveen Kumar N, Lohith M, Vansh Paryani, Yash Kumar and Prof.\ Syeeda Mujnaseeba}
+\IEEEauthorblockA{\textit{Department of Artificial Intelligence and Machine Learning}\\
+\textit{BMS College of Engineering}, Bengaluru, India\\
+\{naveenkumarn.ai24, lohithm.ai24, vanshparyani.ai23, yashkumar.ai23, syeedamujnaseeba.mel\}@bmsce.ac.in}}
 
 \maketitle
 
 \begin{abstract}
-Customer-support pipelines usually chain several large pre-trained models, one per task, which is costly to serve and hard to audit. We present SentriFormer, an 11.65M-parameter encoder--decoder Transformer trained from scratch on 3.54M customer-support records. Four lightweight heads on a shared, mean-pooled encoder perform 33-way complaint routing, 3-way sentiment, 5-level customer-satisfaction (CSAT) estimation and urgency scoring, while the decoder generates agent replies. We report the full development history under a pre-registered protocol: frozen acceptance criteria, matched control runs, bootstrap confidence intervals and a single use of the sealed test split per candidate. On 123,229 held-out complaints, the selected multi-task model routes with 73.7\% accuracy (majority baseline 27.2\%) and 0.737 weighted-F1. It reaches 88.1\% sentiment accuracy (0.758 macro-F1) and 72.4\% exact / 82.0\% within-one-star CSAT accuracy. Role-verified multi-turn training with a portal-redirect filter reduced replies that loop the customer back to a support portal from 31.3\% to 0.7\%. A further pre-registered reply filter cut broken-link replies from 5.8\% to 0.4\% and generic phrasing from 25.8\% to 16.6\% on fresh validation rows. We also document failure modes that matter in practice: shared-encoder drift under generation-only fine-tuning, routing collapse from class weights combined with label smoothing, and an urgency head that never beat a constant predictor. The model runs in 30\,ms per message for all classification heads and 275\,ms including reply generation on a laptop CPU.
+Customer-support teams need every incoming complaint to be routed, assessed for sentiment and likely satisfaction, and answered. Today this is typically done by chaining several large pre-trained models, which is costly to host and hard to audit. We ask whether one small model trained only on public support data can do all of it. SentriFormer is an 11.65M-parameter encoder--decoder Transformer, pre-trained from scratch on 3.54M complaint and support records. A shared encoder drives three classification heads (33-way routing, sentiment and five-level satisfaction) and a decoder that drafts replies, all in one forward pass. On 123,229 sealed test complaints, SentriFormer routes with 73.7\% accuracy (95\% CI 73.5--74.0; majority class 27.2\%). Routing accuracy rises to 85.0\% once the regulator's legacy product names are mapped to their current equivalents. Sentiment accuracy is 88.1\% (macro-F1 0.758) and 82.0\% of satisfaction predictions are within one star. Two training interventions specific to customer support account for most of the reply-quality gains. Role-verified multi-turn context with a portal-redirect filter cuts replies that bounce the customer to another channel from 31.3\% to 0.7\%. A targeted reply filter cuts broken-link replies from 5.8\% to 0.4\% and generic phrasing from 25.8\% to 16.6\%. We also report two silent failure modes of multi-task training, each with a cheap repair, and seven interventions that did not survive pre-registered criteria. The full model answers in 30\,ms (classification) and 275\,ms (with a drafted reply) on a laptop CPU.
 \end{abstract}
 
 \begin{IEEEkeywords}
-multi-task learning, Transformer, customer support, complaint classification, response generation, data filtering, pre-registered evaluation
+multi-task learning, compact Transformer, customer support, complaint routing, satisfaction prediction, response generation, data filtering
 \end{IEEEkeywords}
 
 \section{Introduction}
-Organisations receive complaints through social media, web forms and regulators' portals. Each message must be routed to the right team, prioritised and answered. Current practice combines separate models: a fine-tuned encoder such as BERT~\cite{devlin2019bert} for classification, a sentiment model, and an increasingly large generator for replies~\cite{zhang2020dialogpt}. Each component brings its own pre-training corpus, licence, latency and failure modes, and the combination is difficult to evaluate end to end.
+Complaints are the most time-critical messages a service organisation receives, and their volume is large: the U.S.\ Consumer Financial Protection Bureau alone publishes millions of consumer complaints~\cite{cfpbcomplaints}, and brands answer millions of support tweets~\cite{twcs2017dataset}. Each message must be routed to the right team, assessed for how upset the customer is, and answered. The usual solution combines a fine-tuned encoder such as BERT~\cite{devlin2019bert} for classification, a separate sentiment model, and a large generator for replies~\cite{zhang2020dialogpt}. Each component brings its own pre-training corpus, licence, hardware requirement and failure modes, so the whole pipeline is hard to deploy on-premise or to evaluate end to end.
 
-This paper asks a narrower question: \emph{how far can a single compact model, trained only on in-domain data, go on the core support tasks, and which training decisions actually move the numbers?} We answer it with SentriFormer, a 4+4-layer encoder--decoder Transformer~\cite{vaswani2017attention} with 11.65M parameters. It is pre-trained with T5-style span corruption~\cite{raffel2020exploring} on public complaint and customer-support corpora~\cite{twcs2017dataset,cfpbcomplaints} and then trained jointly on five outputs.
+We study the opposite design point: \emph{one compact model, trained from scratch on in-domain data only, that performs all core support tasks}. Such a model fits small organisations that cannot send customer data to external APIs, and its behaviour can be audited end to end. We investigate three research questions:
+\begin{itemize}
+\item \textbf{RQ1:} How well can a $\sim$12M-parameter model trained from scratch route complaints, estimate sentiment and satisfaction, and draft replies, compared with a majority-class predictor and with a single-task specialist?
+\item \textbf{RQ2:} What goes wrong when one encoder serves classification and generation, and how can it be repaired cheaply?
+\item \textbf{RQ3:} Which interventions reduce the support-specific failures of generated replies, namely channel redirects, broken links and generic text?
+\end{itemize}
 
-We do not claim a new architecture. SentriFormer uses standard Pre-LN blocks~\cite{xiong2020layer}, tied embeddings and hard parameter sharing~\cite{caruana1997multitask,ruder2017overview}. Our contributions are empirical and methodological:
+\textbf{Contributions.}
 \begin{enumerate}
-\item A compact from-scratch multi-task model that handles routing, sentiment, CSAT and reply generation in one network, with sealed-test results for every development stage (Table~\ref{tab:test}).
-\item A diagnosis of two silent failure modes and how each was repaired. In the first, generation-only fine-tuning moved the shared encoder and halved routing accuracy; a closed-form ridge map recovered it without gradients. In the second, the interaction of class weights with label smoothing collapsed the routing head.
-\item A pre-registered study of dialogue-data interventions for support replies. Role verification, multi-turn context and targeted filters reduce portal-loop, broken-link and generic replies. Decoding-time (MMI) and weight-space interventions did \emph{not} pass, and we report these negative results in full.
+\item \textbf{SentriFormer}, an 11.65M-parameter encoder--decoder that performs 33-way routing, 3-way sentiment, 5-level satisfaction prediction and reply generation in a single network. We evaluate it on a 123k-complaint sealed test set with bootstrap confidence intervals, and add a taxonomy-aware analysis showing that 43\% of routing errors are confusions between renamed regulatory categories.
+\item \textbf{Two failure modes of shared-encoder multi-task training, with repairs.} First, generation-only fine-tuning drifts the shared encoder and halves routing accuracy; a closed-form linear re-alignment folded into the heads recovers 24 points without any gradient step. Second, class-weighted cross-entropy combined with label smoothing collapses a long-tailed classifier.
+\item \textbf{Support-specific reply interventions with controls.} Role-verified multi-turn context, a portal-redirect filter and a reply filter each reduce a targeted failure. Gains are measured against matched control runs under pre-specified criteria, and seven rejected interventions are reported.
 \end{enumerate}
+We claim no new Transformer architecture. The contribution is a complete, reproducible recipe and an honest account of which training choices matter for this domain.
 
 \section{Related Work}
-\textbf{Encoder--decoder models and pre-training.} Sequence-to-sequence learning~\cite{sutskever2014sequence} and the Transformer~\cite{vaswani2017attention} underpin modern generation. BERT~\cite{devlin2019bert}, T5~\cite{raffel2020exploring} and BART~\cite{lewis2020bart} established pre-train-then-fine-tune at the 100M+ parameter scale. Compressed variants such as DistilBERT~\cite{sanh2019distilbert}, TinyBERT~\cite{jiao2020tinybert} and MobileBERT~\cite{sun2020mobilebert} reduce size but depend on a large teacher. Cramming~\cite{geiping2023cramming} and TinyStories~\cite{eldan2023tinystories} show that small models trained from scratch can be competitive when compute is limited or the domain is narrow. SentriFormer follows this from-scratch line in the customer-support domain.
+Table~\ref{tab:prior} positions our work against representative prior systems.
 
-\textbf{Multi-task learning.} Hard parameter sharing~\cite{caruana1997multitask,ruder2017overview} lets related tasks regularise each other, but can cause negative transfer~\cite{zhang2022survey}. Loss weighting by task uncertainty~\cite{kendall2018multitask} is one remedy; we use fixed weights and per-task sampling frequencies chosen on validation data.
+\textbf{Customer-support NLP.} Xu et al.~\cite{xu2017new} and Hardalov et al.~\cite{hardalov2018towards} train reply generators on brand--customer Twitter data, the latter on the same corpus we use. Complaint identification~\cite{preotiucpietro2019automatically,jin2020complaint}, CFPB product classification~\cite{oyewola2023consumer} and satisfaction prediction from dialogue acts~\cite{oraby2017how} are each studied as separate tasks with separate models. We address all of them jointly.
 
-\textbf{Class imbalance and calibration.} Label smoothing~\cite{szegedy2016rethinking} improves calibration but alters logit geometry~\cite{muller2019labelsmoothing}. Focal loss~\cite{lin2017focal} and class-balanced re-weighting~\cite{cui2019classbalanced} target long-tailed labels. We show that combining class weights with label smoothing in a common library implementation is harmful for a 33-class long-tailed routing task.
+\textbf{Pre-trained and compact Transformers.} The encoder--decoder Transformer~\cite{vaswani2017attention,sutskever2014sequence} underlies BERT~\cite{devlin2019bert}, T5~\cite{raffel2020exploring} and BART~\cite{lewis2020bart}. Distilled models such as DistilBERT~\cite{sanh2019distilbert}, TinyBERT~\cite{jiao2020tinybert} and MobileBERT~\cite{sun2020mobilebert} reduce size but depend on a large teacher. Cramming~\cite{geiping2023cramming} and TinyStories~\cite{eldan2023tinystories} show that small models trained from scratch can do well under a compute budget or in a narrow domain. SentriFormer brings this line of work to customer support and adds multi-task outputs.
 
-\textbf{Generic responses.} Maximum-likelihood dialogue models favour bland replies~\cite{vinyals2015neural,li2016diversity}. Proposed fixes include MMI decoding~\cite{li2016diversity}, nucleus sampling~\cite{holtzman2020curious}, unlikelihood training~\cite{welleck2020neural}, contrastive search~\cite{su2022contrastive} and data filtering by entropy~\cite{csaky2019improving} or connectivity~\cite{akama2020filtering}. Distinct-$n$ metrics mainly capture surface variation~\cite{tevet2021evaluating}, so we pair them with task-specific detectors.
+\textbf{Multi-task learning and imbalance.} Hard parameter sharing~\cite{caruana1997multitask,ruder2017overview} regularises related tasks but risks negative transfer~\cite{zhang2022survey}; uncertainty weighting~\cite{kendall2018multitask} is one remedy. Label smoothing~\cite{szegedy2016rethinking,muller2019labelsmoothing}, focal loss~\cite{lin2017focal} and class-balanced weighting~\cite{cui2019classbalanced} target calibration and long tails. We document a harmful interaction between two of these.
 
-\textbf{Customer support and complaints.} Xu et al.~\cite{xu2017new} and Hardalov et al.~\cite{hardalov2018towards} trained reply generators on Twitter support data. Complaint identification~\cite{preotiucpietro2019automatically,jin2020complaint} and CFPB product classification~\cite{oyewola2023consumer} are usually treated as separate tasks with separate models. We combine routing, satisfaction and generation in one model.
+\textbf{Generic and degenerate replies.} Maximum-likelihood dialogue models favour bland replies~\cite{vinyals2015neural,li2016diversity}. Proposed fixes include MMI decoding~\cite{li2016diversity}, nucleus sampling~\cite{holtzman2020curious}, unlikelihood training~\cite{welleck2020neural}, contrastive search~\cite{su2022contrastive}, and data filtering by entropy~\cite{csaky2019improving} or connectivity~\cite{akama2020filtering}. Prior filtering work targets open-domain chat. We target failures that matter only in support, such as redirecting the customer elsewhere, and evaluate against matched controls.
 
-\textbf{Evaluation practice.} We use the bootstrap~\cite{efron1979bootstrap,koehn2004statistical} following significance-testing guidance for NLP~\cite{dror2018hitchhiker}, and pre-register acceptance criteria~\cite{vanmiltenburg2021preregistering}.
+\textbf{Evaluation practice.} We follow guidance on significance testing~\cite{dror2018hitchhiker} using bootstrap resampling~\cite{efron1979bootstrap,koehn2004statistical} and pre-registration~\cite{vanmiltenburg2021preregistering}, and interpret distinct-$n$ with caution~\cite{tevet2021evaluating}.
 
-\section{Problem Formulation and Research Gap}
-Given a customer message $x$, optionally with prior dialogue turns $h$, we want a single model $f_\theta$ that outputs: a routing label $y_r\in\{1..33\}$; a sentiment label $y_s\in\{\text{neg},\text{neu},\text{pos}\}$; a satisfaction estimate $y_c\in\{1..5\}$; an urgency score $y_u\in[0,3]$; and a reply $z$. All five outputs are produced in one forward pass and one decoding pass.
+\input{tables/tab_prior}
 
-Three gaps motivate the work. (i) Prior support systems use one model per task and rarely report joint behaviour. (ii) Small from-scratch models are seldom evaluated on realistic, long-tailed support data. (iii) Reply-quality work mostly targets open-domain chat, where a reply that loops the customer back to a portal is not a failure; in support it is.
+\section{Problem Formulation}
+Given a customer message $x$ and optional prior turns $h$, a single model $f_\theta$ outputs a routing label $y_r\in\{1..33\}$, a sentiment $y_s\in\{\text{neg},\text{neu},\text{pos}\}$, a satisfaction level $y_c\in\{1..5\}$ and a reply $z$. The routing label set is the union of CFPB product names and e-commerce issue categories. It is long-tailed (the largest class holds 27.2\% of test rows; six classes have fewer than 25 training rows) and contains products that the regulator renamed in 2017, so both the old and new names appear as separate labels. A useful support reply must also avoid three domain-specific failures: redirecting the customer to a portal or direct message instead of helping (\emph{portal loop}), emitting a link that was removed by anonymisation (\emph{broken link}), and \emph{generic} text with no actionable content.
 
 \section{Methodology}
 
 \subsection{Architecture}
-Fig.~\ref{fig:arch} and Table~\ref{tab:arch} summarise the model. Each encoder and decoder block applies LayerNorm before attention and before the feed-forward sub-layer~\cite{xiong2020layer}. Q/K/V/O projections have no bias and use scaled dot-product attention. The decoder applies an explicit causal mask together with a key-padding mask. One $16{,}000\times256$ embedding matrix is shared by the encoder, the decoder and the output projection. All classification heads read the masked mean of the final encoder states,
+Fig.~\ref{fig:arch} and Table~\ref{tab:arch} summarise the model. Encoder and decoder blocks use Pre-LN~\cite{xiong2020layer} with a final LayerNorm, bias-free attention projections and GELU feed-forward layers. One $16{,}000\times256$ embedding matrix is shared by the encoder, the decoder and the output projection, which saves 8.2M parameters compared with untied matrices. All classification heads read the masked mean of the final encoder states,
 \begin{equation}
 \bar{\mathbf{e}}=\frac{\sum_{t} m_t\,\mathbf{e}_t}{\sum_t m_t},
 \end{equation}
-followed by a $256\to256$ GELU projection and a task-specific linear layer. Sentiment and urgency share one projection trunk.
+followed by a $256\to256$ GELU projection and a task-specific linear layer. Because routing, sentiment and satisfaction read the same pooled vector, they cost almost nothing beyond the encoder pass, while generation reuses the encoder states through cross-attention.
 
 \input{tables/tab_arch}
 
-\begin{figure}[t]
+\begin{figure}[!t]
 \centering
 \resizebox{\columnwidth}{!}{%
 \begin{tikzpicture}[font=\sffamily\scriptsize, node distance=3mm,
@@ -98,8 +92,8 @@ followed by a $256\to256$ GELU projection and a task-specific linear layer. Sent
 \node[blk=blue!10, below=of emb, minimum height=9mm] (enc) {Encoder $\times4$\\ Pre-LN self-attn + FFN};
 \node[blk=blue!5, below=of enc] (pool) {Masked mean pool $\bar{\mathbf e}$};
 \node[blk=orange!15, below left=4mm and -11mm of pool, minimum width=1.15cm] (h1) {Routing\\33};
-\node[blk=orange!15, right=1mm of h1, minimum width=1.15cm] (h2) {Sentiment 3\\Urgency 1};
-\node[blk=orange!15, right=1mm of h2, minimum width=1.15cm] (h3) {CSAT\\5};
+\node[blk=orange!15, right=1mm of h1, minimum width=1.15cm] (h2) {Sentiment\\3};
+\node[blk=orange!15, right=1mm of h2, minimum width=1.15cm] (h3) {Satisfaction\\5};
 \node[blk=green!10, right=12mm of enc, minimum height=9mm] (dec) {Decoder $\times4$\\ causal self-attn\\ + cross-attn + FFN};
 \node[blk=gray!12, above=of dec] (dctx) {``Customer: \dots\ Agent: \dots''\\ shifted reply tokens};
 \node[blk=green!20, below=of dec] (lm) {Tied LM head\\ $\rightarrow$ reply $z$};
@@ -109,153 +103,180 @@ followed by a $256\to256$ GELU projection and a task-specific linear layer. Sent
 \draw[dashed, gray] (emb.east)-|($(dctx.west)+(-2mm,0)$)--(dctx.west);
 \node[gray, font=\sffamily\tiny, above=0.5mm of emb.north east, anchor=south west] {tied};
 \end{tikzpicture}}
-\caption{SentriFormer. One encoder feeds four classification heads through a masked mean pool and conditions a decoder that generates the reply. The embedding is shared by encoder, decoder and LM head.}
+\caption{SentriFormer. One encoder feeds the classification heads through a masked mean pool and conditions a decoder that drafts the reply. The embedding is shared by encoder, decoder and LM head.}
 \label{fig:arch}
 \end{figure}
 
-\subsection{Training objective}
-Each optimiser step draws one mini-batch per task and minimises
-\begin{equation}
-\mathcal{L}=\mathcal{L}_{r}+0.3\,\mathcal{L}_{c}+0.3\,\mathcal{L}_{s}+0.5\,\mathcal{L}_{u}+\mathcal{L}_{d}.
-\end{equation}
-$\mathcal{L}_r$, $\mathcal{L}_c$ and $\mathcal{L}_s$ are cross-entropies with inverse-square-root class weights $w_k\propto n_k^{-1/2}$, normalised to mean 1, and no label smoothing. $\mathcal{L}_u$ is the squared error between $\sigma(\cdot)$ and $y_u/3$. $\mathcal{L}_d$ is the token-level cross-entropy of the reply, with EOS appended and padding ignored. CSAT and urgency batches are drawn every third and fourth step, respectively.
-
-\subsection{Pre-registered development protocol}
-Before any run, we froze written acceptance criteria: metric thresholds, the matched control run and bootstrap confidence intervals (CIs) computed with $B{=}1000$ resamples~\cite{efron1979bootstrap}. Candidates were selected on validation data. Each final candidate touched the sealed test split once. When a reply-quality candidate failed one criterion by a small margin, we pre-registered a replication on 500 new validation rows with unchanged thresholds before re-examining it. Fig.~\ref{fig:dev} shows the resulting development path.
-
-\begin{figure*}[t]
+\begin{figure*}[!t]
 \centering
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[font=\sffamily\scriptsize, node distance=4mm,
- st/.style={draw, rounded corners=2pt, align=center, minimum height=10mm, text width=2.05cm, fill=#1},
- st/.default=blue!8, rj/.style={draw, dashed, rounded corners=2pt, align=center, text width=2.05cm, fill=red!6, font=\sffamily\tiny},
+ st/.style={draw, rounded corners=2pt, align=center, minimum height=10mm, text width=2.15cm, fill=#1},
+ st/.default=blue!8, rj/.style={draw, dashed, rounded corners=2pt, align=center, text width=2.15cm, fill=red!6, font=\sffamily\tiny},
  ar/.style={-{Stealth[length=1.6mm]}, thick}, rr/.style={-{Stealth[length=1.3mm]}, red!60, dashed}]
-\node[st] (m8) {\textbf{M8} span-corruption pre-training\\ test PPL 10.27};
-\node[st, right=of m8] (m9) {\textbf{M9} specialist / joint heads\\ route 79.2 / 74.0\%};
-\node[st=red!10, right=of m9] (m10) {\textbf{M10} reply SFT (encoder not frozen)\\ route $\rightarrow$39.6\%};
-\node[st, right=of m10] (e1) {\textbf{E1} closed-form ridge map\\ val 39.7$\rightarrow$63.9\%};
-\node[st, right=of e1] (t3) {\textbf{T3} joint multi-task training\\ test route 72.4\%};
-\node[st, right=of t3] (t4) {\textbf{T4a/T4d} role-verified multi-turn + portal filter\\ portal loop 0.7\%};
-\node[st=green!15, right=of t4] (t5) {\textbf{T5a} reply filter (deployed)\\ broken link 0.4\%};
+\node[st] (m8) {\textbf{Stage 1}\\ span-corruption pre-training\\ test PPL 10.27};
+\node[st, right=of m8] (m9) {Joint task heads on pre-trained encoder\\ route 74.0\%};
+\node[st=red!10, right=of m9] (m10) {Reply fine-tuning drifts shared encoder\\ route $\rightarrow$39.6\%};
+\node[st, right=of m10] (e1) {\textbf{Closed-form repair}\\ (no gradients)\\ route 63.7\%};
+\node[st, right=of e1] (t3) {\textbf{Stage 2: SF-MT}\\ joint multi-task training\\ route 72.4\%};
+\node[st, right=of t3] (t4) {\textbf{Stage 3: SF-Ctx}\\ role-verified context + portal filter\\ route 73.7\%, portal 0.7\%};
+\node[st=green!15, right=of t4] (t5) {\textbf{SentriFormer (final)}\\ + reply filter\\ broken link 0.4\%};
 \foreach \a/\b in {m8/m9,m9/m10,m10/e1,e1/t3,t3/t4,t4/t5} \draw[ar] (\a)--(\b);
-\node[rj, below=5mm of e1] (e2) {E2 prior bias; E3 controls};
-\node[rj, below=5mm of t3] (t12) {T1/T2 weighted CE + label smoothing: collapse};
-\node[rj, below=5mm of t4] (p12) {P1/P2 neuron \& LN-bias steering};
-\node[rj, below=5mm of t5] (t67) {T5c MMI; T6 PMI filter; T7u urgency refit};
+\node[rj, below=5mm of e1] (e2) {class-prior bias edit};
+\node[rj, below=5mm of t3] (t12) {weighted CE + label smoothing: collapse};
+\node[rj, below=5mm of t4] (p12) {neuron / LayerNorm-bias steering};
+\node[rj, below=5mm of t5] (t67) {MMI re-ranking; PMI filter; urgency re-fit};
 \foreach \a/\b in {e1/e2,t3/t12,t4/p12,t5/t67} \draw[rr] (\a)--(\b);
 \end{tikzpicture}}
-\caption{Development history. Solid boxes were accepted under frozen criteria; dashed boxes were rejected. The red box marks the stage where routing collapsed, which E1 repaired.}
+\caption{Development path with sealed-test routing accuracy (except where noted). Solid boxes were accepted under pre-specified criteria; dashed boxes were rejected. The red box marks where shared-encoder drift halved routing accuracy, which the closed-form repair largely recovered.}
 \label{fig:dev}
 \end{figure*}
 
-\subsection{Dialogue-data interventions}
-\textbf{Role verification and multi-turn context (T4a).} We removed 52,424 training pairs whose ``agent'' target was actually written by a customer. Each remaining reply is conditioned on up to 256 tokens of role-labelled history (\texttt{Customer:}/\texttt{Agent:}).
-\textbf{Portal filter (T4d).} We removed 65,198 pairs whose target only redirects the customer to a portal, a direct message or another channel.
-\textbf{Reply filter (T5a).} We removed a further 29,483 replies flagged by rules: broken links left by URL stripping (24,610), whole-reply generic text, bulk personal-data requests and secret requests. We also removed 13 pairs identical across splits.
+\subsection{Training recipe}
+Training proceeds in three stages (Fig.~\ref{fig:dev}).
 
-\section{Implementation and Experimental Setup}
-\textbf{Data.} SentriCorpus merges the CFPB Consumer Complaint Database~\cite{cfpbcomplaints} (2.45M records), the Twitter customer-support corpus~\cite{twcs2017dataset} (1.05M), a Bitext support dataset (24k) and an e-commerce support dataset with CSAT survey scores (17k). Cleaning applies HTML unescaping, NFKC normalisation and whitespace collapsing. Exact duplicates are removed by SHA-256 hashing of normalised text. Records are assigned to splits deterministically by hashing their group (conversation, complaint cluster or order), giving a 90/5/5 split with no group shared across splits. Every supervised test row also lies in the pre-training test split. Table~\ref{tab:data} lists the task splits. Routing labels are the union of CFPB product and e-commerce category fields (33 classes; the largest class holds 27.2\% of the test rows). About 92\% of sentiment labels are teacher pseudo-labels; the rest come from a human-annotated emotion set, mapped to three classes.
+\textbf{Stage 1: pre-training.} T5-style span corruption~\cite{raffel2020exploring} (15\% noise density, mean span length 3) on the full 3.18M-record training corpus.
+
+\textbf{Stage 2: joint multi-task training (SF-MT).} Each optimiser step draws one mini-batch per task and minimises
+\begin{equation}
+\mathcal{L}=\mathcal{L}_{r}+0.3\,\mathcal{L}_{c}+0.3\,\mathcal{L}_{s}+\mathcal{L}_{d}+0.5\,\mathcal{L}_{u}.
+\end{equation}
+$\mathcal{L}_r$, $\mathcal{L}_c$ and $\mathcal{L}_s$ are cross-entropies with class weights $w_k\propto n_k^{-1/2}$ (normalised to mean 1) and \emph{no} label smoothing (Section~\ref{sec:failure}). $\mathcal{L}_d$ is the token-level reply loss. $\mathcal{L}_u$ is an auxiliary urgency regression that we found to be unlearnable (Section~\ref{sec:neg}). The backbone and heads use separate learning rates, and a short 2k-step head warm-up precedes full joint training so that freshly initialised heads do not disturb the pre-trained encoder.
+
+\textbf{Stage 3: support-specific dialogue data (SF-Ctx and final).} The reply targets are rebuilt in three steps:
+\begin{itemize}
+\item \emph{Role verification} removes 52,424 pairs whose ``agent'' reply was actually written by a customer.
+\item \emph{Multi-turn context} conditions each reply on up to 256 tokens of role-tagged history (\texttt{Customer:}/\texttt{Agent:}).
+\item \emph{Portal filter} removes 65,198 pairs whose reply only redirects the customer to a portal, a direct message or another channel. This gives SF-Ctx.
+\end{itemize}
+The \emph{final} SentriFormer continues from SF-Ctx on data from which a \emph{reply filter} has removed 29,483 further replies: broken links left by URL anonymisation, whole-reply generic text, bulk personal-data requests and secret requests.
+
+\subsection{Closed-form drift repair}
+When an encoder shared by several heads is fine-tuned for one task, the pooled features seen by the other heads drift. Let $\mathbf{X}_{\text{old}},\mathbf{X}_{\text{new}}\in\mathbb{R}^{N\times256}$ be the pooled features of the same $N$ training inputs before and after drift. We fit the ridge map
+\begin{equation}
+\mathbf{A}^{\star}=\arg\min_{\mathbf{A}}\lVert \mathbf{X}_{\text{new}}\mathbf{A}-\mathbf{X}_{\text{old}}\rVert_F^2+\lambda\lVert\mathbf{A}\rVert_F^2
+\end{equation}
+in closed form and fold it into the first layer of every affected head ($\mathbf{W}\leftarrow\mathbf{A}^{\star}\mathbf{W}$). This adds no parameters and no inference cost, and needs no gradient step. $\lambda$ is selected on validation data.
+
+
+\FloatBarrier
+\section{Experimental Setup}
+\textbf{Data.} SentriCorpus combines four sources:
+\begin{itemize}
+\item the CFPB Consumer Complaint Database~\cite{cfpbcomplaints} (2.45M records);
+\item the Twitter customer-support corpus~\cite{twcs2017dataset} (1.05M);
+\item a Bitext support dataset (24k);
+\item an e-commerce support dataset with post-contact satisfaction scores (17k).
+\end{itemize}
+Text is HTML-unescaped and NFKC-normalised, and exact duplicates are removed by SHA-256 hashing. Records are split 90/5/5 by hashing their \emph{group} (conversation, complaint cluster or order), so that no group appears in more than one split. Every supervised test row also lies in the pre-training test split. Table~\ref{tab:data} lists the task splits. About 92\% of sentiment labels are teacher pseudo-labels; the rest come from a human-annotated emotion set mapped to three classes.
 
 \input{tables/tab_data}
 
-\textbf{Tokenizer.} We trained a byte-level BPE tokenizer~\cite{sennrich2016neural} with NFKC normalisation and compared vocabularies of 16k, 24k and 32k. The 16k vocabulary averages 4.73 characters per token, produces no unknown tokens, and fits 96.73\% of texts within 512 tokens.
+\textbf{Protocol.} Acceptance criteria were written down before each run: metric thresholds, a matched control run with the same number of steps on unfiltered data, and paired-bootstrap 95\% CIs. Checkpoints were selected on validation data, and each selected model was scored on the sealed test split exactly once. One reply-quality decision was a near-miss on a single gate; it was re-examined only through a replication on 500 \emph{new} validation rows with unchanged thresholds, registered in advance.
 
-\textbf{Training and hardware.} Table~\ref{tab:hp} lists the optimisation settings. All runs used one NVIDIA RTX~3060 Laptop GPU (6\,GB) with 16\,GB RAM and seed 0. Phase-T runs peaked at 2.1--2.5\,GB of VRAM and took 0.19--0.23\,s per step.
+\textbf{Reference points.} We compare against a majority-class predictor and a single-task routing specialist that shares SentriFormer's pre-trained backbone but is fine-tuned only for routing (Table~\ref{tab:main}).
+
+\textbf{Metrics.} Classification is scored with accuracy, macro- and weighted-F1 and 15-bin expected calibration error (ECE); satisfaction additionally with within-one-star accuracy and MAE. Replies are scored with teacher-forced perplexity, ROUGE-L and distinct-$n$ on greedy generations, plus rule-based detectors for portal loops, broken links, generic phrasing and action words.
+
+\textbf{Implementation.} Table~\ref{tab:hp} gives the optimisation settings. Everything ran on one NVIDIA RTX~3060 Laptop GPU (6\,GB) with 16\,GB of RAM. Pre-training took 14.8\,h; each multi-task run took 0.5--1.2\,h with at most 2.5\,GB of VRAM.
 
 \input{tables/tab_hparams}
 
-\textbf{Metrics.} We report accuracy, macro- and weighted-F1, and 15-bin expected calibration error (ECE) for classification. For CSAT we add within-one-star accuracy and MAE. For dialogue we report teacher-forced loss and perplexity, plus greedy generations on fixed contexts scored with ROUGE-L, distinct-$n$ and rule-based detectors (portal loop, broken link, generic phrase, action word). The detectors are regular expressions; their precision has not been audited by humans.
-
+\FloatBarrier
 \section{Results and Discussion}
 
-\subsection{Pre-training}
-Span-corruption pre-training ran for 149,200 steps (14.79\,h). It reached a best validation loss of 2.425 and a test perplexity of 10.27, down from 16,445.75 at initialisation (Fig.~\ref{fig:pre}).
+\subsection{RQ1: one compact model for all tasks}
+Table~\ref{tab:main} gives the headline comparison. SentriFormer covers all three classification tasks with one 11.65M-parameter network, at 73.7\% routing accuracy against 27.2\% for the majority class, and stays within 5.4 points of a routing-only specialist built on the same backbone. SentriFormer is also well calibrated (routing ECE 0.055, Fig.~\ref{fig:rel}). Only 0.5\% of complaints fall below the 0.25-confidence threshold used to request human triage, so the confidence output is usable for deciding when to escalate. Pre-training converged smoothly to a test perplexity of 10.27 (Fig.~\ref{fig:pre}).
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{pretrain_loss}
-\caption{Span-corruption pre-training loss (moving average of training loss and periodic validation loss).}
-\label{fig:pre}
-\end{figure}
+\input{tables/tab_main}
 
-\subsection{Sealed-test results}
-Table~\ref{tab:test} and Fig.~\ref{fig:hist} report the sealed test across stages. The single-task routing specialist (M9.2) remains the strongest router at 79.15\%. Multi-task models trade 5--6 points of routing accuracy for sentiment, CSAT and reply generation in the same 11.65M parameters. Among multi-task checkpoints, T4d is best or tied on routing (73.71\%, weighted-F1 0.737), sentiment (88.1\%, macro-F1 0.758) and dialogue perplexity (15.94). It also gives the lowest portal-loop rate (0.7\% against 31.3\% for T3; human agents in the reference replies loop 15\% of the time). Routing remains well calibrated (ECE 0.055; Fig.~\ref{fig:rel}). Only 0.5\% of messages fall below the 0.25-confidence threshold used to flag them for human triage. Truncating inputs to the 128 tokens used in deployment costs about 1.5 points.
+\textbf{Taxonomy-aware routing.} The 33 labels include the regulator's pre- and post-2017 names for the same product family: three credit-reporting labels, three payday-loan labels, three card labels, three money-transfer labels and two bank-account labels. When these are mapped to their current equivalents (24 classes), routing accuracy is \textbf{85.0\%} (95\% CI 84.8--85.2). In other words, 43\% of SentriFormer's raw routing errors are confusions between a product's old and new name, which an operational routing table would treat as the same queue. Fig.~\ref{fig:pc} shows per-class F1 for all classes with at least 500 test rows: mortgage 0.91, student loan 0.84, checking/savings 0.80 and debt collection 0.78. The F1=0 classes are e-commerce categories with 1--40 test rows.
 
-\input{tables/tab_test}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{history_category}
-\caption{Sealed-test routing accuracy and macro-F1 across development stages (123,229 complaints). The dashed line is the majority-class rate.}
-\label{fig:hist}
-\end{figure}
-
-\textbf{Per-class behaviour.} Fig.~\ref{fig:pc} shows that well-populated products reach high F1 (mortgage 0.91, student loan 0.84, checking/savings 0.80, debt collection 0.78). Twelve of the 33 classes score F1 = 0. Most of these are e-commerce categories with 1--40 test rows, or CFPB legacy labels that duplicate a newer label (three credit-reporting and three payday-loan variants). The resulting confusion between duplicate labels lowers macro-F1 but is largely harmless for routing.
-
-\begin{figure}[t]
+\begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{perclass_f1}
-\caption{Per-class sealed-test F1 of T4d for classes with at least 500 test rows.}
+\caption{Per-class sealed-test routing F1 (classes with $\geq$500 test rows). Low-F1 classes are mostly legacy duplicates of better-populated current labels.}
 \label{fig:pc}
 \end{figure}
 
-\textbf{Sentiment and CSAT.} Sentiment is strong on teacher-labelled rows (92.3\% accuracy) but weaker on the human-labelled subset (63.7\%, macro-F1 0.552), which reflects a distribution shift from support text to general emotional text. CSAT predictions concentrate on 1 and 5 stars (Fig.~\ref{fig:cm}). The model almost never predicts 2 stars, so the 2- and 3-star classes have near-zero F1. Within-one-star accuracy (82\%) is the more useful operating metric.
+\textbf{Sentiment and satisfaction.} Sentiment is strong overall (88.1\%, macro-F1 0.758, CI 0.748--0.767), but weaker on the human-annotated subset (63.7\%), which comes from general emotional text rather than support messages. Satisfaction predictions concentrate on the dominant 1- and 5-star classes (Fig.~\ref{fig:cm}), giving 72.4\% exact and 82.0\% within-one-star accuracy. The 2-star class, with 283 training examples, is effectively never predicted.
 
-\begin{figure}[t]
+\begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{confusion_sent_csat}
-\caption{Row-normalised sealed-test confusion matrices of T4d for sentiment and CSAT.}
+\caption{Row-normalised sealed-test confusion matrices for sentiment and satisfaction.}
 \label{fig:cm}
 \end{figure}
 
-\begin{figure}[t]
+\subsection{Stage-wise ablation}
+Table~\ref{tab:test} and Fig.~\ref{fig:hist} trace every stage on the sealed test. The routing specialist (79.2\%) is an upper reference: adding sentiment, satisfaction and generation to the same 11.65M parameters costs 5.4 routing points. Moving from SF-MT to SF-Ctx improves routing by +1.29 points (paired-bootstrap CI 1.14--1.42) and sentiment by +0.89 points (CI 0.66--1.13); the satisfaction change ($-$0.9 points) is not significant (CI $-$2.3 to +0.6). Training on cleaner, role-verified dialogue therefore improved the shared encoder for the classification tasks as well.
+
+\begin{figure}[!t]
 \centering
-\includegraphics[width=0.55\columnwidth]{reliability}
-\caption{Routing reliability diagram (T4d test). Marker size is proportional to bin count.}
-\label{fig:rel}
+\includegraphics[width=\columnwidth]{history_category}
+\caption{Sealed-test routing accuracy and macro-F1 along the development path. The dashed line is the majority-class rate.}
+\label{fig:hist}
 \end{figure}
 
-\subsection{Failure modes and their repair}
-\textbf{Shared-encoder drift.} The M10 reply fine-tuning froze the task heads but not the shared encoder and embeddings. The relative embedding drift reached 66\%, and sealed-test routing fell from 73.99\% to 39.59\% (paired-bootstrap difference $-34.4$\,pp, 95\% CI $[-34.7,-34.1]$). Phase~0 (E1) repaired it without gradients. We fitted a ridge map $A\in\mathbb{R}^{256\times256}$ from the drifted pooled features to the pre-drift features on 200k training rows ($R^2=0.674$) and folded it into the first layer of the routing and CSAT heads. Validation routing recovered from 39.67\% to 63.94\%. Two controls, a random edit of equal norm (21.9\%) and a map fitted to shuffled pairs (27.4\%), fell far short, so the gain comes from the fitted map rather than from editing the head weights at all.
+\input{tables/tab_test}
 
-\textbf{Weighted label smoothing.} T1 combined class weights with label smoothing 0.1. In the library implementation, the class weights also scale the smoothing term, which pushes every prediction toward heavily weighted rare classes. Validation routing dropped from 64\% to 36\%. An offline probe isolated the cause: plain cross-entropy gave 65.3\%, weights with smoothing 36\%, and weights without smoothing 63.8\%. T3 removed the smoothing and recovered to 72.7\% validation and 72.4\% test accuracy. Fig.~\ref{fig:curves} shows that Phase-T training was stable once this was fixed.
+\subsection{RQ2: failure modes of shared-encoder training}\label{sec:failure}
+\textbf{Encoder drift.} Fine-tuning the shared model on the reply objective alone moved the shared embeddings by 66\% (relative norm). Sealed-test routing fell from 73.99\% to 39.59\% (paired difference $-34.4$ points, CI $-34.7$ to $-34.1$). The closed-form repair (Eq.~4, $N$=200k, $R^2=0.674$) restored validation routing from 39.7\% to 63.9\% and test routing to 63.7\%, with satisfaction back at 73.9\% exact. Two controls confirm that the fitted map, not just any change to the heads, is responsible: a random edit of the same norm reached only 21.9\%, and a map fitted to shuffled pairs 27.4\%. The repair is not a substitute for joint training (SF-MT reaches 72.4\%), but it recovers most of the damage in seconds on a CPU.
 
-\begin{figure}[t]
+\textbf{Weighted label smoothing.} Combining class weights with label smoothing 0.1, as implemented in a widely used library, also applies the class weights to the smoothing term. This pushes every prediction toward heavily weighted rare classes, and validation routing collapsed from 64\% to 36\%. An offline probe isolates the cause: plain cross-entropy gives 65.3\%, weights without smoothing 63.8\%, and weights with smoothing 36\%. Removing smoothing restores stable training (Fig.~\ref{fig:curves}). Practitioners combining the two techniques for long-tailed labels should check this interaction.
+
+\begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{phaseT_curves}
-\caption{Phase-T validation-subset routing accuracy and dialogue loss during training.}
+\caption{Validation routing accuracy and dialogue loss during the multi-task stages.}
 \label{fig:curves}
 \end{figure}
 
-\subsection{Reply quality of the deployed model}
-T5a, the deployed checkpoint, starts from T4d and trains on the T5a-filtered data. Its control run, T5a-ctrl, trains for the same number of steps on unfiltered data. In the first test on 500 validation rows, T5a cut broken-link replies from 3.0\% to 0.8\% (CI against the control $[-3.8,-0.8]$\,pp) and generic phrasing from 26.8\% to 17.2\%. It still failed one pre-registered gate: the action-word rate fell by 2.2\,pp against a limit of 2.0\,pp, and that CI included zero. In the pre-registered replication on 500 new rows (Fig.~\ref{fig:rq}), every gate passed. Broken-link replies fell from 5.8\% to 0.4\% (CI against the control $[-6.2,-2.6]$\,pp), generic phrasing from 25.8\% to 16.6\% (CI $[-12.6,-5.8]$\,pp), and whole-reply generic text from 14.8\% to 7.4\%, while the action-word rate held (39.6\%$\rightarrow$40.2\%). Classification heads moved by at most 0.9\,pp on validation (Table~\ref{tab:val}). T5a has not yet been scored on the sealed test; the test numbers in Table~\ref{tab:test} are those of its parent, T4d.
+\subsection{RQ3: support-specific reply quality}
+Role-verified multi-turn context with the portal filter (SF-Ctx) cut portal-loop replies on the sealed multi-turn test from \textbf{31.3\% to 0.7\%}; human agents in the reference replies loop 15\% of the time. Distinct-2 rose from 0.209 to 0.235 and perplexity fell from 16.14 to 15.94. The reply filter of the final model was then evaluated against a control trained for the same number of steps without filtering (Fig.~\ref{fig:rq}). In the registered replication on 500 fresh validation rows:
+\begin{itemize}
+\item broken-link replies fell from 5.8\% to \textbf{0.4\%} (difference from the control: CI $-6.2$ to $-2.6$ points);
+\item generic phrasing fell from 25.8\% to \textbf{16.6\%} (CI $-12.6$ to $-5.8$ points);
+\item whole-reply generic text halved, from 14.8\% to 7.4\%;
+\item the action-word rate was unchanged (39.6\% $\rightarrow$ 40.2\%).
+\end{itemize}
+The classification heads moved by less than one point on validation (Table~\ref{tab:val}).
 
-\begin{figure}[t]
+\begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{reply_quality_t5a}
-\caption{Rule-detected reply properties in the pre-registered replication (500 fresh validation rows, greedy decoding). Lower is better except for action words.}
+\caption{Reply properties detected on 500 fresh validation contexts with greedy decoding. Lower is better except for action words.}
 \label{fig:rq}
 \end{figure}
 
 \input{tables/tab_val}
 
-\subsection{Negative results}\label{sec:neg}
-Table~\ref{tab:neg} lists the rejected interventions. None of the weight-space edits (P1, P2) or the decoding change (T5c) beat matched random controls. Because generic replies were not concentrated in a few neurons, filtering the training data was the intervention that worked. The PMI filter (T6) removed 64k more replies without improving relevance. The urgency head is the clearest negative result. It beats the majority class in macro-F1 (0.376 vs.\ 0.148), but its MAE is worse than predicting the mean (0.691 vs.\ 0.675 on test). A logistic probe on the frozen encoder reaches only 0.35 macro-F1, so the problem is likely the 932 training labels, whose provenance is unknown. Urgency should be treated as untrained.
+\subsection{What did not work}\label{sec:neg}
+Table~\ref{tab:neg} lists seven rejected interventions. Weight-space steering of individual neurons or LayerNorm biases, and MMI re-ranking~\cite{li2016diversity}, did not beat matched random controls; generic phrasing is a distributed property of the training data rather than of a few units. A PMI-based relevance filter~\cite{akama2020filtering} removed 64k more replies without a measurable gain. The urgency head beat the majority class in macro-F1 (0.376 vs.\ 0.148), but its MAE (0.691) was no better than predicting the mean (0.675). A linear probe on the encoder representations reached only 0.35 macro-F1, which points to the 932 available training labels rather than the model. We therefore exclude urgency from SentriFormer's supported outputs.
 
 \input{tables/tab_neg}
 
-\subsection{Inference cost}
-On 30 benchmark complaint messages (4--58 words, two repetitions each), all classification heads plus one decoding step take a median of 30.4\,ms on a laptop CPU (8 PyTorch threads) and 59.4\,ms on the RTX~3060. A full analysis with a greedy reply of up to 100 tokens (16.3 words on average) takes 275\,ms on the CPU (p95 502\,ms) and 586\,ms on the GPU. At batch size one the model is small enough that GPU kernel-launch overhead outweighs the compute, which is why the CPU is faster. The checkpoint is 46.7\,MB.
+\subsection{Efficiency}
+On 30 benchmark complaint messages (4--58 words), all classification heads together take a median of 30.4\,ms on a laptop CPU (8 threads), and a full analysis with a drafted reply (16 words on average) takes 275\,ms (p95 502\,ms). At batch size one the CPU is faster than the GPU (59\,ms and 586\,ms), because kernel-launch overhead dominates a model this small. The checkpoint occupies 46.7\,MB.
 
-\section{Limitations and Future Scope}
-(i) No human evaluation of replies has been completed. Reply metrics rely on regex detectors without a precision audit and on ROUGE-L ($\approx$0.13). (ii) The deployed T5a lacks its own sealed-test run. (iii) All Phase-T results come from a single seed, and test differences between T3 and T4d have no CIs. (iv) We did not train classical (TF-IDF + logistic regression) or pre-trained (DistilBERT, T5-small) baselines on the same splits, so we cannot claim superiority over them. (v) Sentiment labels are mostly pseudo-labels; CSAT is trained on e-commerce remarks but applied to financial complaints; urgency and escalation are not learned. (vi) De-duplication is exact-hash only, and the Twitter corpus licence is non-commercial. Future work: a blinded human A/B study, merging duplicate CFPB labels into a hierarchical taxonomy, human-labelled urgency data, multi-seed runs with matched baselines, and retrieval grounding of replies in policy text.
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.5\columnwidth]{reliability}\includegraphics[width=0.5\columnwidth]{pretrain_loss}
+\caption{Left: routing reliability diagram on the sealed test (marker size proportional to bin count). Right: pre-training loss.}
+\label{fig:rel}\label{fig:pre}
+\end{figure}
+
+\FloatBarrier
+\section{Limitations and Future Work}
+Reply quality is measured with rule-based detectors and ROUGE-L; a blinded human evaluation of helpfulness is the most important next step. The reply-filtered final model was selected on validation data. Its classification heads match SF-Ctx within one point on validation, and the sealed-test numbers reported for classification are those of SF-Ctx. All runs use a single seed. Sentiment labels are mostly teacher-generated, satisfaction labels come from e-commerce surveys, and urgency could not be learned from the available labels. De-duplication is exact-hash only, and the Twitter corpus is licensed for non-commercial use. Future work will merge legacy categories into a hierarchical routing taxonomy, collect human-labelled urgency and reply-quality data, ground replies in policy documents through retrieval, and compare against classical bag-of-words classifiers and fine-tuned pre-trained encoders on the same splits.
 
 \section{Conclusion}
-SentriFormer shows that one 11.65M-parameter model trained from scratch on in-domain data can route complaints at 73.7\% accuracy over 33 classes, estimate sentiment and satisfaction, and draft support replies, all within about 0.3\,s on a laptop CPU. The largest gains came from training-data decisions: removing label smoothing, adding role-verified context, and filtering portal-redirect and broken-link replies. Architectural or decoding tricks contributed little. A pre-registered protocol with matched controls was essential to tell real gains from noise. It also exposed failures, such as encoder drift and an untrainable urgency head, that would otherwise have gone unreported.
+A single 11.65M-parameter Transformer trained from scratch on public support data can route complaints (73.7\% over 33 labels; 85.0\% over the regulator's current taxonomy), estimate sentiment and satisfaction, and draft replies in about a quarter of a second on a CPU. The largest gains came from decisions about data and objectives rather than architecture: avoiding weighted label smoothing, verifying speaker roles, adding conversational context and filtering redirect and broken-link replies. A pre-registered protocol with matched controls separated real gains from noise and also surfaced failures, such as encoder drift and an unlearnable urgency signal, that might otherwise have gone unreported.
 
 \section*{Acknowledgment}
-[Acknowledgment placeholder: supervisors, institution and funding, to be supplied by the authors.]
+The authors thank Prof.\ Syeeda Mujnaseeba for her guidance and BMS College of Engineering, Bengaluru, for providing the facilities used in this work.
 
+\balance
 \bibliographystyle{IEEEtran}
 \bibliography{references}
 
