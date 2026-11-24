@@ -350,9 +350,12 @@ async def submit_complaint(
         priority = "CRITICAL"
         analysis["priority"] = "CRITICAL"
 
+    # Auto-reply only when the engine also judges the case safe (no refund/legal/fraud terms, not very negative).
+    auto_reply = priority == "LOW" and bool(analysis.get("auto_resolvable"))
+
     complaint_data = {
         "title": title,
-        "category": "other",
+        "category": analysis.get("routed_category", "other"),
         "description": translated_text,
         "original_text": original_text,
         "original_language": detected_lang,
@@ -362,9 +365,9 @@ async def submit_complaint(
         **analysis,
     }
 
-    if priority == "LOW":
+    if auto_reply:
         complaint_data["status"] = "auto_replied"
-        ai_reply_text = analysis.get("ai_suggested_response", "Thank you for your feedback.")
+        ai_reply_text = analysis.get("user_auto_response") or "Thank you for your feedback."
         if detected_lang and detected_lang != "en":
             try:
                 ai_reply_text = GoogleTranslator(source='en', target=detected_lang).translate(ai_reply_text)
@@ -376,7 +379,7 @@ async def submit_complaint(
 
     complaint = save_complaint(complaint_data)
 
-    if priority == "LOW":
+    if auto_reply:
         db.replies.insert_one({
             "complaint_id": complaint["id"],
             "reply_text": ai_reply_text,

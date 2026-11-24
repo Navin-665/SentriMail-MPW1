@@ -207,37 +207,80 @@ def _infer_issue_type(text: str, category: str) -> str:
 
 
 def _load_models() -> None:
-    global _sentiment_pipeline, _emotion_pipeline, _generative_pipeline, _models_loaded, _use_transformers
+    """All model work is done by SentriFormer (our own transformer); no Hugging Face Hub models are loaded.
+    If SentriFormer cannot load, the keyword/template fallbacks below keep the app working."""
+    global _models_loaded, _use_transformers
     if _models_loaded:
         return
+    _use_transformers = _get_sentriformer() is not None
+    _models_loaded = True
 
-    try:
-        from transformers import pipeline
 
-        _sentiment_pipeline = pipeline(
-            "sentiment-analysis",
-            model="distilbert-base-uncased-finetuned-sst-2-english",
-            truncation=True,
-            max_length=512,
-        )
-        _emotion_pipeline = pipeline(
-            "text-classification",
-            model="j-hartmann/emotion-english-distilroberta-base",
-            truncation=True,
-            max_length=512,
-        )
+def _wrap_reply(username: str, body: str) -> str:
+    return f"Dear {username},\n\n{body.strip()}\n\nRegards,\nSentriMail Support"
+
+
+# Reply-quality patterns copied from the SentriFormer evaluation code (wsp/eval_t4.py ACTION,
+# wsp_runs/sentriwsp01/phase1_investigate.py GENERIC, wsp_runs/t5/t5_audit_v5.py BROKEN).
+_ACTION = re.compile(r"(\b(share|provide|send|confirm|include) (us )?(with )?(your|the) ([a-z]+ ){0,3}(number|id|details|email|name|address|screenshot|error)\b|\b(could|can|would) you (please )?(confirm|share|provide|tell|send|let us know|check|try)\b|\bplease (confirm|share|provide|tell us|let us know (the|your|what|which|when|if))\b|"
+                     r"\b(what|which|when|where|how long|is it|are you|did you|have you)\b[^.?!]*\?|"
+                     r"\b(try|restart|reinstall|update|reset|log ?in|sign in|go to (settings|your account|the app|the [a-z]+ app)|tap|select|"
+                     r"check (your|the) (email|inbox|statement|settings|order history|spam|account)|freeze|lock|cancel|unplug|clear (the |your )?cache|turn (it )?off)\b)", re.I)
+_GENERIC = re.compile(r"(let (us|me) know if (you need|there'?s|you have) (any(thing)?|more|further|other)|anything else|"
+                      r"pass (this|that|it|your feedback|along)|sorry to hear (that|this)[.!]?\s*$|sorry for the (trouble|inconvenience))", re.I)
+_BROKEN = re.compile(r"(\b(at|via)\s+(for|and|so|to|if|or|they|we)\b|\b(at|via)\s*[.;](?!\d)|"
+                     r"\b(here|link|below|following|website)\s*:\s*([.,;!?]|$|and\b|so\b|let\b|to\b|we\b|for\b)|:\s*[.!?]?\s*$)", re.I)
+_STOP = set("i me my we our you your the a an and or to of in on for is are was were be been it this that with at by from have has "
+            "had do does did not no can will would could please hi hello thanks thank sorry us let know help but showing".split())
+
+
+def _content_stems(t: str) -> set:
+    return {w[:5] for w in re.findall(r"[a-z]+", t.lower()) if w not in _STOP and len(w) > 2}
+
+
+def _reply_score(complaint: str, result) -> float:
+    """Higher = more specific: rewards an action/question and words shared with the complaint; penalises generic
+    filler, broken links and safety flags. Used only to choose among SentriFormer's own candidate replies."""
+    reply = (result.get("response") or "").strip()
+    if len(reply.split()) < 3: return -99.0
+    flags = [k for k, v in result.get("quality_flags", {}).items() if v and k != "eos_terminated"]
+    s = 0.0
+    s += 2.0 if _ACTION.search(reply) else 0.0
+    s += 1.0 if "?" in reply else 0.0
+    s += 1.5 * min(len(_content_stems(reply) & _content_stems(complaint)), 3)
+    s -= 2.0 * len(_GENERIC.findall(reply))
+    s -= 4.0 if _BROKEN.search(reply) else 0.0
+    s -= 5.0 * len(flags)
+    # Invented specifics (Twitter-brand names, teams, amounts) that the customer never mentioned.
+    low = complaint.lower()
+    names = re.findall(r"(?<![.!?]\s)(?<!^)\b([A-Z][a-zA-Z]+)", reply)
+    s -= 2.5 * sum(1 for w in names if w.lower() not in low and w not in {"I", "We", "OS"})
+    s -= 3.0 * sum(1 for n in re.findall(r"[$£€]?\d[\d,.]*", reply) if n.strip("$£€") not in complaint)
+    return s
+
+
+def _best_sf_result(sf, text: str, first, n_samples: int = 10):
+    """Best-of-N decoding: the greedy reply plus n sampled replies from SentriFormer, ranked by _reply_score.
+    (SentriFormer's T5c experiment found sampled candidates are far less generic than greedy decoding.)"""
+    cands = [first]
+    for seed in range(1, n_samples + 1):
         try:
-            _generative_pipeline = pipeline("text2text-generation", model="google/flan-t5-small")
-        except:
-            _generative_pipeline = None
+            cands.append(sf.analyze(text, greedy=False, seed=seed))
+        except Exception as exc:
+            logger.warning("SentriFormer sampling failed: %s", exc); break
+    best = max(cands, key=lambda r: _reply_score(text, r))
+    return {**first, "response": best["response"], "quality_flags": best["quality_flags"]}
 
-        _use_transformers = True
-        logger.info("Transformer models loaded.")
-    except Exception as exc:
-        _use_transformers = False
-        logger.warning("Transformer load failed; using rule-based fallback: %s", exc)
-    finally:
-        _models_loaded = True
+
+def _sf_reply(sf_result, username: str) -> str:
+    """SentriFormer's generated reply, or '' if empty or any safety flag fired (then templates are used)."""
+    if not sf_result:
+        return ""
+    body = (sf_result.get("response") or "").strip()
+    flags = [k for k, v in sf_result.get("quality_flags", {}).items() if v and k != "eos_terminated"]
+    if len(body.split()) < 3 or flags:
+        return ""
+    return _wrap_reply(username, body)
 
 
 def _get_sentriformer():
@@ -478,55 +521,33 @@ def analyze_complaint(
     sf = _get_sentriformer()
     if sf is not None:
         try:
-            sf_result = sf.analyze(text)
+            sf_result = _best_sf_result(sf, text, sf.analyze(text))
         except Exception as exc:
             logger.warning("SentriFormer analysis failed: %s", exc)
 
+    # Sentiment: SentriFormer sentiment head (fallback: keyword rules).
     if sf_result and "sentiment" in sf_result:
         sentiment = {"label": sf_result["sentiment"]["label"].upper(), "score": round(max(sf_result["sentiment"]["probs"]), 3)}
-    elif _use_transformers and _sentiment_pipeline:
-        try:
-            raw = _sentiment_pipeline(text[:512])[0]
-            sentiment = {"label": raw["label"], "score": round(raw["score"], 3)}
-        except Exception:
-            sentiment = _rule_based_sentiment(text)
     else:
         sentiment = _rule_based_sentiment(text)
 
-    if _use_transformers and _emotion_pipeline:
-        try:
-            raw = _emotion_pipeline(text[:512])[0]
-            emotion = {"label": raw["label"], "score": round(raw["score"], 3)}
-        except Exception:
-            emotion = _rule_based_emotion(text)
-    else:
-        emotion = _rule_based_emotion(text)
+    # Emotion: keyword rules (SentriFormer has no emotion head); only used as a priority signal.
+    emotion = _rule_based_emotion(text)
 
     priority_data = _compute_priority(sentiment, emotion, text)
     auto_resolvable = _is_auto_resolvable(priority_data["priority"], text, sentiment)
 
-    dataset_suggestion = _predict_response_from_dataset(
-        text=text,
-        username=username,
-        category=category,
-        priority=priority_data["priority"],
-    )
-    if dataset_suggestion and priority_data["priority"] in {"HIGH", "CRITICAL"} and _is_generic_dataset_response(dataset_suggestion):
-        dataset_suggestion = ""
+    # Routing: SentriFormer 33-class head; low-confidence routes stay "other" for manual triage.
+    routed_category = category
+    if sf_result and not sf_result["category"]["needs_human_triage"]:
+        routed_category = sf_result["category"]["label"]
 
-    admin_suggestion = dataset_suggestion or _generate_admin_suggestion(
-        priority=priority_data["priority"],
-        username=username,
-        text=text,
-        category=category,
+    # Replies: SentriFormer's generated reply when it passes the safety flags, otherwise the templates.
+    sf_reply = _sf_reply(sf_result, username)
+    admin_suggestion = sf_reply or _generate_admin_suggestion(
+        priority=priority_data["priority"], username=username, text=text, category=category,
     )
-    auto_response = (dataset_suggestion or _generate_auto_user_response(
-        username=username, 
-        text=text, 
-        category=category, 
-        sentiment_score=sentiment["score"], 
-        original_language="en"
-    )) if auto_resolvable else ""
+    auto_response = (sf_reply or _generate_auto_user_response(username=username)) if auto_resolvable else ""
 
     return {
         "sentiment_label": sentiment["label"],
@@ -541,11 +562,11 @@ def analyze_complaint(
         "admin_suggested_response": admin_suggestion,
         # Backward-compatible key consumed by existing templates.
         "ai_suggested_response": admin_suggestion if not auto_resolvable else auto_response,
-        "model_used": "transformer" if _use_transformers else "rule-based",
-        "response_source": "dataset" if dataset_suggestion else "template",
+        "model_used": "sentriformer" if sf_result else "rule-based",
+        "response_source": "sentriformer" if sf_reply else "template",
+        "routed_category": routed_category,
         "reference_id": complaint_id,
-        # Admin-only: routing, CSAT forecast and a draft reply. Never auto-sent (reply quality is not good enough yet);
-        # urgency head is not used (not learned, see sentriformer/wsp_runs/t7u/T7U_DECISION.md).
+        # Urgency head is not used (not learned, see sentriformer/wsp_runs/t7u/T7U_DECISION.md).
         "sentriformer": {
             "category": sf_result["category"]["label"],
             "category_confidence": sf_result["category"]["confidence"],
